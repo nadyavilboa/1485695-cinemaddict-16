@@ -1,39 +1,20 @@
-import { createHeaderProfileTemplate } from './view/header-profile-view.js';
-import { createSiteMenuTemplate } from './view/site-menu-view.js';
-import { createSortTemplate } from './view/sort-films-view.js';
-import { createItemFilmTemplate } from './view/item-film-view.js';
-import { createButtonShowMoreTemplate } from './view/button-show-more-view.js';
-import { createTopRatedTemplate } from './view/film-top-rated-view.js';
-import { createMostCommentedTemplate } from './view/film-most-commented-view.js';
-import { createFooterStatisticTemplate } from './view/statistic-movies-view.js';
+import { createHeaderTemplate } from './view/header-view.js';
+import { createMenuTemplate } from './view/menu-view.js';
+import { createSortTemplate } from './view/sort-view.js';
+import { createFilmsContainerTemplate } from './view/films-container-view.js';
+import { renderSectionFilms } from './view/render-films-list.js';
+import { createFooterTemplate } from './view/footer-view.js';
 import { renderTemplate, RenderPosition } from './render.js';
 
-const siteHeaderElement = document.querySelector('.header');
-const headerProfileElement = siteHeaderElement.querySelector('.header__profile');
+const headerElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
-const siteMenuElement = siteMainElement.querySelector('.main__menu');
-const sortElement = siteMainElement.querySelector('.main__sort');
-const filmsListElement = siteMainElement.querySelector('.films-list');
-const filmContainerElement = filmsListElement.querySelector('.films-list__container');
-const filmsTopRatedElement = siteMainElement.querySelector('.top-rated');
-const filmsTopContainerElement = filmsTopRatedElement.querySelector('.films-top');
-const filmsMostCommentedElement = siteMainElement.querySelector('.most-commented');
-const filmsCommentedContainerElement = filmsMostCommentedElement.querySelector('.films-commented');
-const footerStatistic = document.querySelector('.footer__statistics');
 
-const FILMS_COUNT = 5;
+const footerElement = document.querySelector('.footer');
 
-renderTemplate(headerProfileElement, createHeaderProfileTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteMenuElement, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(sortElement, createSortTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(headerElement, createHeaderTemplate(), RenderPosition.BEFORE_END);
+renderTemplate(siteMainElement, createMenuTemplate(), RenderPosition.BEFORE_END);
+renderTemplate(siteMainElement, createSortTemplate(), RenderPosition.BEFORE_END);
 
-for (let i = 0; i < FILMS_COUNT; i++) {
-  renderTemplate(filmContainerElement, createItemFilmTemplate(), RenderPosition.BEFOREEND);
-}
-
-renderTemplate(filmsListElement, createButtonShowMoreTemplate(), RenderPosition.BEFOREEND);
-
-renderTemplate(filmsTopContainerElement, createTopRatedTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(filmsCommentedContainerElement, createMostCommentedTemplate(), RenderPosition.BEFOREEND);
-
-renderTemplate(footerStatistic, createFooterStatisticTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(siteMainElement, createFilmsContainerTemplate(), RenderPosition.BEFORE_END);
+renderSectionFilms();
+renderTemplate(footerElement, createFooterTemplate(), RenderPosition.BEFORE_END);
