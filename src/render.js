@@ -5,6 +5,6 @@ export const RenderPosition = {
   AFTER_END: 'afterend',
 };
 
-export const renderTemplate = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
+export const renderTemplate = (container, template) => {
+  container.insertAdjacentHTML(RenderPosition.BEFORE_END, template);
 };
