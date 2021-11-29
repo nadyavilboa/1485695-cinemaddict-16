@@ -7,6 +7,7 @@ import { createFilmsContainerTemplate } from './view/films-container-view.js';
 import { createFilmTemplate } from './view/film-view.js';
 import { createButtonShowMoreTemplate } from './view/button-show-more-view.js';
 import { renderTemplate } from './render.js';
+import { generateFilm } from './mock/film.js';
 
 const headerElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
@@ -16,11 +17,15 @@ const footerElement = document.querySelector('.footer');
 const FILMS_AMOUNT = 5;
 const FILMS_EXTRA_AMOUNT = 2;
 
+const FILMS_GENERATED_AMOUNT = 20;
+
 const FilmsTitle = {
-  'full-list': 'All movies. Upcoming',
-  'top-rated': 'Top rated',
-  'most-commented': 'Most commented',
+  FULL: 'All movies. Upcoming',
+  TOP_RATED: 'Top rated',
+  MOST_COMMENTED: 'Most commented',
 };
+
+const films = Array.from({length: FILMS_GENERATED_AMOUNT}, generateFilm);
 
 renderTemplate(headerElement, createHeaderTemplate());
 renderTemplate(siteMainElement, createMenuTemplate());
@@ -30,24 +35,19 @@ renderTemplate(footerElement, createFooterTemplate());
 renderTemplate(siteMainElement, createFilmSectionTemplate());
 
 const renderListFilms = (container, amount) => {
+  const filmsContainerElement = container.querySelector('.films-list__container');
+
   for (let i = 0; i < amount; i++) {
-    renderTemplate(container.children[1], createFilmTemplate());
+    renderTemplate(filmsContainerElement, createFilmTemplate(films[i]));
   }
 };
 
-const buildContainer = (number, title, isExtra) => {
-  const filmsContainerElement = siteMainElement.querySelector('.films');
-  renderTemplate(filmsContainerElement, createFilmsContainerTemplate(title));
-  const filmsListElement = filmsContainerElement.children[number];
+const buildContainer = (title, isExtra) => {
+  const filmsSectionElement = siteMainElement.querySelector('.films');
+  renderTemplate(filmsSectionElement, createFilmsContainerTemplate(title, isExtra));
+  const filmsListElement = filmsSectionElement.querySelector('.films-list:last-child');
 
   if (isExtra) {
-    const listHeaderElement = filmsListElement.querySelector('.films-list__title');
-    if (!filmsListElement.classList.contains('films-list--extra')) {
-      filmsListElement.classList.add('films-list--extra');
-    }
-    if (listHeaderElement.classList.contains('visually-hidden')) {
-      listHeaderElement.classList.remove('visually-hidden');
-    }
     renderListFilms(filmsListElement, FILMS_EXTRA_AMOUNT);
   } else {
     renderListFilms(filmsListElement, FILMS_AMOUNT);
@@ -56,10 +56,9 @@ const buildContainer = (number, title, isExtra) => {
 };
 
 const renderSectionFilms = () => {
-  buildContainer(0, FilmsTitle['full-list'], false);
-  buildContainer(1, FilmsTitle['top-rated'], true);
-  buildContainer(2, FilmsTitle['most-commented'], true);
+  buildContainer(FilmsTitle.FULL, false);
+  buildContainer(FilmsTitle.TOP_RATED, true);
+  buildContainer(FilmsTitle.MOST_COMMENTED, true);
 };
 
 renderSectionFilms();
-
