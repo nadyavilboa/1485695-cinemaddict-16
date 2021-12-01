@@ -1,8 +1,8 @@
-export const createFooterTemplate = () => (
+export const createFooterTemplate = (filmsCount) => (
   `<section class="footer__logo logo logo--smaller">Cinemaddict</section>
   <section class="footer__statistics">
     <p>
-      130 291 movies inside
+      ${filmsCount} movies inside
     </p>
   </section>`
 );
