@@ -1,4 +1,5 @@
 import { createHeaderTemplate } from './view/header-view.js';
+import { createMenuContainerTemplate } from './view/menu-container-view.js';
 import { createMenuTemplate } from './view/menu-view.js';
 import { createFilterItemTemplate } from './view/filter-view.js';
 import { createSortTemplate } from './view/sort-view.js';
@@ -7,16 +8,21 @@ import { createFooterTemplate } from './view/footer-view.js';
 import { createFilmsContainerTemplate } from './view/films-container-view.js';
 import { createFilmTemplate } from './view/film-view.js';
 import { createButtonShowMoreTemplate } from './view/button-show-more-view.js';
-import { createPopupInfoContainerTemplate } from './view/popup-info-container-view';
-import { createPopupInfoGenreTemplate } from './view/popup-info-genre-view.js';
+import { createPopupContainerTemplate } from './view/popup-container-view';
+import { createPopupInfoContainerTemplate } from './view/popup-info-container-view.js';
 import { createPopupControlsTemplate } from './view/popup-controls-view.js';
 import { createPopupCommentsContainerTemplate } from './view/popup-commets-container-view.js';
+import { createPopupCommentsListTemplate } from './view/popup-comments-list-view.js';
 import { createPopupCommentTemplate } from './view/popup-comment-view.js';
+import { createPopupNewCommentTemplate } from './view/popup-new-comment-view.js';
+import { createPopupEmojiListTemplate } from './view/popup-emoji-list-view.js';
 import { generateFilm } from './mock/film.js';
 import { generateComment } from './mock/comment.js';
 import { addIdObjects, getActualRank } from './utils.js';
-import { generateFilters } from './mock/filter.js';
+import { countFilters, generateFilters } from './mock/filter.js';
 import { renderTemplate } from './render.js';
+
+import { CommentsStringData } from './mock/comment.js';
 
 const headerElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
@@ -40,23 +46,25 @@ const FilmsTitle = {
 };
 
 const films = Array.from({length: FILMS_GENERATED_AMOUNT}, generateFilm);
-addIdObjects(films);
-
 const comments = Array.from({length: COMMENTS_GENERATED_AMOUNT}, generateComment);
+addIdObjects(films);
 addIdObjects(comments);
 
-const filters = generateFilters(films);
+const filmsToFilterMap = countFilters(films);
+
+const filters = generateFilters(filmsToFilterMap);
 
 const userWatched = filters.find((filter) => filter.name === FILTER_USER_RATING).count;
 const userRank = getActualRank(userWatched);
 renderTemplate(headerElement, createHeaderTemplate(userRank));
 
-renderTemplate(siteMainElement, createMenuTemplate());
-const filterContainerElement = siteMainElement.querySelector('.main-navigation__items');
-let isCountVisible = false;
+renderTemplate(siteMainElement, createMenuContainerTemplate());
+const menuContainerElement = siteMainElement.querySelector('.main-navigation');
+renderTemplate(menuContainerElement, createMenuTemplate());
+
+const filterContainerElement = menuContainerElement.querySelector('.main-navigation__items');
 filters.forEach((filter) => {
-  renderTemplate(filterContainerElement, createFilterItemTemplate(filter, isCountVisible));
-  isCountVisible = true;
+  renderTemplate(filterContainerElement, createFilterItemTemplate(filter));
 });
 
 renderTemplate(siteMainElement, createSortTemplate());
@@ -64,7 +72,7 @@ renderTemplate(footerElement, createFooterTemplate(FILMS_ALL_COUNT));
 
 renderTemplate(siteMainElement, createFilmSectionTemplate());
 
-const renderListFilms = (container, amount, index) => {
+const renderListFilms = (container, amount, index = 0) => {
   const filmsContainerElement = container.querySelector('.films-list__container');
 
   for (let i = index; i < index + amount; i++) {
@@ -84,11 +92,11 @@ const buildContainer = (title, isExtra) => {
   const filmsListElement = filmsSectionElement.querySelector('.films-list:last-child');
 
   if (isExtra) {
-    renderListFilms(filmsListElement, FILMS_EXTRA_AMOUNT, 0);
+    renderListFilms(filmsListElement, FILMS_EXTRA_AMOUNT);
   } else {
-    renderListFilms(filmsListElement, Math.min(films.length,FILMS_AMOUNT_PER_STEP), 0);
+    renderListFilms(filmsListElement, Math.min(films.length, FILMS_AMOUNT_PER_STEP));
 
-    if(films.length > FILMS_AMOUNT_PER_STEP) {
+    if (films.length > FILMS_AMOUNT_PER_STEP) {
       let renderedFilmsAmount = FILMS_AMOUNT_PER_STEP;
       renderTemplate(filmsListElement, createButtonShowMoreTemplate());
 
@@ -118,22 +126,25 @@ const renderPopupFilm = (film) => {
   const popupElement = document.querySelector('.film-details');
   const popupFormElement = popupElement.querySelector('.film-details__inner');
 
-  renderTemplate(popupFormElement, createPopupInfoContainerTemplate(film));
+  renderTemplate(popupFormElement, createPopupContainerTemplate());
+  const popupInfoContainerElement = popupFormElement.querySelector('.film-details__top-container');
 
-  const filmTableRowElement = popupFormElement.querySelector('.film-details__row:last-child');
-  const filmsInfoGenreElement = filmTableRowElement.querySelector('.film-details__cell');
-  for (let i = 0; i < film.genre.length; i++) {
-    renderTemplate(filmsInfoGenreElement, createPopupInfoGenreTemplate(film.genre[i]));
-  }
-
+  renderTemplate(popupInfoContainerElement, createPopupInfoContainerTemplate(film));
   renderTemplate(popupFormElement, createPopupControlsTemplate(film.userDetails));
 
   renderTemplate(popupFormElement, createPopupCommentsContainerTemplate(film.commentsCount));
-  const commentContainerElement = popupFormElement.querySelector('.film-details__comments-wrap');
-  const commentListElement = commentContainerElement.querySelector('.film-details__comments-list');
+  const commentsContainerElement = popupFormElement.querySelector('.film-details__comments-wrap');
+
+  renderTemplate(commentsContainerElement, createPopupCommentsListTemplate());
+  const commentsListElement = commentsContainerElement.querySelector('.film-details__comments-list');
+
   for (let i = 0; i < film.commentsCount; i++) {
-    renderTemplate(commentListElement, createPopupCommentTemplate(comments[i]));
+    renderTemplate(commentsListElement, createPopupCommentTemplate(comments[i]));
   }
+
+  renderTemplate(commentsContainerElement, createPopupNewCommentTemplate());
+  const newCommentContainerElement = commentsContainerElement.querySelector('.film-details__new-comment');
+  renderTemplate(newCommentContainerElement, createPopupEmojiListTemplate(CommentsStringData.COMMENTS_EMOTION, false));
 };
 
 renderSectionFilms();

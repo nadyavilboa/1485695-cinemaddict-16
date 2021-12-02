@@ -1,7 +1,15 @@
 import dayjs from 'dayjs';
 
-const USER_RANKS_NAMES = ['', 'Novice', 'Fan', 'Movie Buff'];
-const USER_RANKS_LEVELS = [0, 10, 20];
+const UserRankNames = {
+  LOW: 'Novice',
+  MIDDLE: 'Fan',
+  HIGH: 'Movie Buff',
+};
+
+const UserRankLevels = {
+  LOW: 10,
+  HIGH: 20,
+};
 
 export const getRandomInteger = (numberLeft, numberRight) => {
   if(numberLeft === numberRight) {
@@ -27,21 +35,30 @@ export const getRandomElements = (array) => {
 };
 
 export const getActualRank = (watched) => {
-  const ranksUser = USER_RANKS_LEVELS.slice();
-  ranksUser.push(watched);
-  ranksUser.sort((a, b) => (a < 0) - (b < 0) || a - b);
-  const index = ranksUser.indexOf(watched);
-  const rank = USER_RANKS_NAMES[index];
+  let rank;
+
+  if (watched > 0 && watched <= UserRankLevels.LOW) {
+    rank = UserRankNames.LOW;
+  }
+
+  if (watched > UserRankLevels.LOW && watched <= UserRankLevels.HIGH) {
+    rank = UserRankNames.MIDDLE;
+  }
+
+  if (watched > UserRankLevels.HIGH) {
+    rank = UserRankNames.HIGH;
+  }
+
   return rank;
 };
 
 export const addIdObjects = (array) => {
-  array.forEach((element,index) => {
+  array.forEach((element, index) => {
     element.id = index;
   });
 };
 
-export const getUrlImage = (folder,namesFiles) => {
+export const getUrlImage = (folder, namesFiles) => {
   const numberFilm = getRandomInteger(1, namesFiles.length) - 1;
   return `${folder}${namesFiles[numberFilm]}`;
 };

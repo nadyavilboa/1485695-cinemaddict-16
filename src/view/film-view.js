@@ -6,7 +6,7 @@ export const createFilmTemplate = (film) => (
       <p class="film-card__info">
         <span class="film-card__year">${film.release.date}</span>
         <span class="film-card__duration">${film.runtime}</span>
-        <span class="film-card__genre">${film.genre.join(', ')}</span>
+        <span class="film-card__genre">${film.genres.join(', ')}</span>
       </p>
       <img src="${film.poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${film.description.length > 139 ? film.description.slice(0,138) : film.description}</p>

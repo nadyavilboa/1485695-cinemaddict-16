@@ -32,8 +32,8 @@ const getRating = () => {
 };
 
 export const generateFilm = () => ({
-  id: 0, //id сейчас генерируется после генерации массива, как индекс в массиве
-  commentsCount: getRandomInteger(0, FilmsNumberData.MAX_COMMENT_COUNT), //пока здесь кол-во, а комменты отдельно, но здесь должен быть массив id комментариев
+  id: 0,
+  commentsCount: getRandomInteger(0, FilmsNumberData.MAX_COMMENT_COUNT),
   poster: getUrlImage(FilmsStringData.FILMS_POSTERS_FOLDER,FilmsStringData.FILMS_POSTERS),
   title: FilmsStringData.FILMS_TITLES[getRandomInteger(1, FilmsStringData.FILMS_TITLES.length) - 1],
   alternativeTitle: FilmsStringData.FILMS_ALTERNATIVE_TITLES[getRandomInteger(1, FilmsStringData.FILMS_ALTERNATIVE_TITLES.length) - 1],
@@ -41,18 +41,18 @@ export const generateFilm = () => ({
   ageRating: getRandomInteger(0, FilmsNumberData.MAX_AGE_RATING),
   director: FilmsStringData.FILMS_DIRECTORS[getRandomInteger(1, FilmsStringData.FILMS_DIRECTORS.length) - 1],
   release: {
-    date: getRandomDate(FilmsNumberData.MAX_DAY_GAP, 'year'), //нет форматирования(два варианта формат.этой даты в карточке и в попапе)
+    date: getRandomDate(FilmsNumberData.MAX_DAY_GAP, 'year'),
     releaseCountry: FilmsStringData.FILMS_COUNTRY[getRandomInteger(1, FilmsStringData.FILMS_COUNTRY.length) - 1],
   },
-  runtime: getRandomInteger(FilmsNumberData.MIN_RUNTIME,FilmsNumberData.MAX_RUNTIME), //сделать формат в карточке и в попапе
+  runtime: getRandomInteger(FilmsNumberData.MIN_RUNTIME,FilmsNumberData.MAX_RUNTIME),
   writers: getRandomElements(FilmsStringData.FILMS_WRITERS),
   actors: getRandomElements(FilmsStringData.FILMS_ACTORS),
-  genre: getRandomElements(FilmsStringData.FILMS_GENRE),
+  genres: getRandomElements(FilmsStringData.FILMS_GENRE),
   description: getRandomElements(FilmsStringData.FILMS_DESCRIPTIONS).join(''),
   userDetails: {
     watchlist: Boolean(getRandomInteger(0, 1)),
     alreadyWatched: Boolean(getRandomInteger(0, 1)),
-    watchingDate: getRandomDate(FilmsNumberData.MAX_DAY_GAP, 'day'), //нет форматирования даты
+    watchingDate: getRandomDate(FilmsNumberData.MAX_DAY_GAP, 'day'),
     favorite: Boolean(getRandomInteger(0, 1)),
   },
 });

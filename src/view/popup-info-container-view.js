@@ -1,9 +1,5 @@
 export const createPopupInfoContainerTemplate = (film) => (
-  `<div class="film-details__top-container">
-  <div class="film-details__close">
-    <button class="film-details__close-btn" type="button">close</button>
-  </div>
-  <div class="film-details__info-wrap">
+  `<div class="film-details__info-wrap">
     <div class="film-details__poster">
       <img class="film-details__poster-img" src="${film.poster}" alt="">
 
@@ -49,7 +45,9 @@ export const createPopupInfoContainerTemplate = (film) => (
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Genres</td>
-          <td class="film-details__cell"></td>
+          <td class="film-details__cell">
+            ${film.genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(' ')}
+          </td>
         </tr>
       </table>
 
@@ -57,6 +55,5 @@ export const createPopupInfoContainerTemplate = (film) => (
         ${film.description}
       </p>
     </div>
-  </div>
 </div>`
 );
