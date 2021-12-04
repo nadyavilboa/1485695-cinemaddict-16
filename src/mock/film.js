@@ -1,4 +1,5 @@
-import { getUrlImage, getRandomInteger, getRandomElements, getRandomDate } from './../utils';
+import { getUrlImage, getRandomInteger, getRandomElements, getRandomDate, generateCommentsFilm, addIdObjects } from './../utils';
+import { comments } from './comments.js';
 
 const FilmsStringData = {
   FILMS_TITLES : ['Made for Each Other', 'Popeye the Sailor Meets Sinbad the Sailor', 'Sagebrush Trail', 'Santa Claus Conquers the Martians', 'The Dance of Life', 'The Great Flamarion', 'The Man with the Golden Arm'],
@@ -23,7 +24,6 @@ const FilmsNumberData = {
   MAX_LENGTH_DESCRIPTION: 5,
   MIN_RUNTIME: 10,
   MAX_RUNTIME: 240,
-  MAX_COMMENT_COUNT: 5,
 };
 
 const getRating = () => {
@@ -33,7 +33,7 @@ const getRating = () => {
 
 export const generateFilm = () => ({
   id: 0,
-  commentsCount: getRandomInteger(0, FilmsNumberData.MAX_COMMENT_COUNT),
+  comments: generateCommentsFilm(comments),
   poster: getUrlImage(FilmsStringData.FILMS_POSTERS_FOLDER,FilmsStringData.FILMS_POSTERS),
   title: FilmsStringData.FILMS_TITLES[getRandomInteger(1, FilmsStringData.FILMS_TITLES.length) - 1],
   alternativeTitle: FilmsStringData.FILMS_ALTERNATIVE_TITLES[getRandomInteger(1, FilmsStringData.FILMS_ALTERNATIVE_TITLES.length) - 1],
@@ -56,3 +56,4 @@ export const generateFilm = () => ({
     favorite: Boolean(getRandomInteger(0, 1)),
   },
 });
+

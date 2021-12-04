@@ -1,4 +1,4 @@
-import { getRandomInteger,getRandomDate } from './../utils';
+import { getRandomInteger, getRandomDate, addIdObjects } from '../utils';
 
 export const CommentsStringData = {
   COMMENTS_TEXT : ['Interesting setting and a good cast', 'Booooooooooring', 'Very very old. Meh', 'Almost two hours? Seriously?', 'Interesting story'],
@@ -7,6 +7,7 @@ export const CommentsStringData = {
 };
 
 const MAX_DAY_GAP = 30;
+const COMMENTS_GENERATED_AMOUNT = 100;
 
 export const generateComment = () => ({
   id: 0,
@@ -15,3 +16,7 @@ export const generateComment = () => ({
   date: getRandomDate(MAX_DAY_GAP, 'day') ,
   emotion: CommentsStringData.COMMENTS_EMOTION[getRandomInteger(1,CommentsStringData.COMMENTS_EMOTION.length) - 1],
 });
+
+
+export const comments = Array.from({length: COMMENTS_GENERATED_AMOUNT}, generateComment);
+addIdObjects(comments);

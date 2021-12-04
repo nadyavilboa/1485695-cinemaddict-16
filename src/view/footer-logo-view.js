@@ -1,10 +1,10 @@
 import { createElement } from '../render.js';
 
-const createFilmSectionTemplate = () => (
-  '<section class="films"></section>'
+const createFooterLogoTemplate = () => (
+  '<section class="footer__logo logo logo--smaller">Cinemaddict</section>'
 );
 
-export default class FilmSectionView {
+export default class FooterLogoView {
   #element = null;
 
   get element() {
@@ -16,7 +16,7 @@ export default class FilmSectionView {
   }
 
   get template() {
-    return createFilmSectionTemplate();
+    return createFooterLogoTemplate();
   }
 
   removeElement() {
