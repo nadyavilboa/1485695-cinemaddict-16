@@ -1,7 +1,9 @@
 import { createElement } from '../render.js';
 
 const createHeaderLogoTemplate = () => (
-  '<h1 class="header__logo logo">Cinemaddict</h1>'
+  `<h1 class="header__logo logo">
+    Cinemaddict
+  </h1>`
 );
 
 export default class HeaderLogoView {

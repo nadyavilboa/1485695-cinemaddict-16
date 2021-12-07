@@ -1,12 +1,12 @@
 import { createElement } from '../render.js';
 
-const createFooterLogoTemplate = () => (
-  `<section class="footer__logo logo logo--smaller">
-    Cinemaddict
-  </section>`
+const createPopupCloseButtonTemplate = () => (
+  `<button class="film-details__close-btn" type="button">
+    close
+  </button>`
 );
 
-export default class FooterLogoView {
+export default class PopupCloseButtonView {
   #element = null;
 
   get element() {
@@ -18,7 +18,7 @@ export default class FooterLogoView {
   }
 
   get template() {
-    return createFooterLogoTemplate();
+    return createPopupCloseButtonTemplate();
   }
 
   removeElement() {

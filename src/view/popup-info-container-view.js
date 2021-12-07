@@ -57,7 +57,7 @@ const createPopupInfoContainerTemplate = (film) => (
         ${film.description}
       </p>
     </div>
-</div>`
+  </div>`
 );
 
 export default class PopupInfoContainerView {

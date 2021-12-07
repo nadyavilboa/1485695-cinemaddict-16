@@ -1,4 +1,4 @@
-import { getUrlImage, getRandomInteger, getRandomElements, getRandomDate, generateCommentsFilm, addIdObjects } from './../utils';
+import { getUrlImage, getRandomInteger, getRandomElements, getRandomDate, generateCommentsFilm } from './../utils';
 import { comments } from './comments.js';
 
 const FilmsStringData = {
@@ -34,7 +34,7 @@ const getRating = () => {
 export const generateFilm = () => ({
   id: 0,
   comments: generateCommentsFilm(comments),
-  poster: getUrlImage(FilmsStringData.FILMS_POSTERS_FOLDER,FilmsStringData.FILMS_POSTERS),
+  poster: getUrlImage(FilmsStringData.FILMS_POSTERS_FOLDER, FilmsStringData.FILMS_POSTERS),
   title: FilmsStringData.FILMS_TITLES[getRandomInteger(1, FilmsStringData.FILMS_TITLES.length) - 1],
   alternativeTitle: FilmsStringData.FILMS_ALTERNATIVE_TITLES[getRandomInteger(1, FilmsStringData.FILMS_ALTERNATIVE_TITLES.length) - 1],
   totalRating: getRating(),
@@ -44,7 +44,7 @@ export const generateFilm = () => ({
     date: getRandomDate(FilmsNumberData.MAX_DAY_GAP, 'year'),
     releaseCountry: FilmsStringData.FILMS_COUNTRY[getRandomInteger(1, FilmsStringData.FILMS_COUNTRY.length) - 1],
   },
-  runtime: getRandomInteger(FilmsNumberData.MIN_RUNTIME,FilmsNumberData.MAX_RUNTIME),
+  runtime: getRandomInteger(FilmsNumberData.MIN_RUNTIME, FilmsNumberData.MAX_RUNTIME),
   writers: getRandomElements(FilmsStringData.FILMS_WRITERS),
   actors: getRandomElements(FilmsStringData.FILMS_ACTORS),
   genres: getRandomElements(FilmsStringData.FILMS_GENRE),

@@ -1,8 +1,10 @@
 import { createElement } from '../render.js';
 
+const MAX_LENGTH_VISIBLE_DESCRIPTION = 140;
+
 const createFilmTemplate = (film) => (
   `<article class="film-card">
-    <a class="film-card__link" id="${film.id}">
+    <a class="film-card__link">
       <h3 class="film-card__title">${film.title}</h3>
       <p class="film-card__rating">${film.totalRating}</p>
       <p class="film-card__info">
@@ -11,7 +13,7 @@ const createFilmTemplate = (film) => (
         <span class="film-card__genre">${film.genres.join(', ')}</span>
       </p>
       <img src="${film.poster}" alt="" class="film-card__poster">
-      <p class="film-card__description">${film.description.length > 140 ? film.description.slice(0,139) : film.description}${film.description.length > 140 ? '…' : ''}</p>
+      <p class="film-card__description">${film.description.length > MAX_LENGTH_VISIBLE_DESCRIPTION ? film.description.slice(0, MAX_LENGTH_VISIBLE_DESCRIPTION - 1) : film.description}${film.description.length > MAX_LENGTH_VISIBLE_DESCRIPTION ? '…' : ''}</p>
       <span class="film-card__comments">${film.comments.length} comments</span>
     </a>
     <div class="film-card__controls">

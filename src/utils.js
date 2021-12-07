@@ -12,10 +12,10 @@ const UserRankLevels = {
 };
 
 export const getRandomInteger = (numberLeft, numberRight) => {
-  if(numberLeft === numberRight) {
+  if (numberLeft === numberRight) {
     return numberLeft;
   }
-  if(numberLeft > numberRight) {
+  if (numberLeft > numberRight) {
     getRandomInteger(numberRight, numberLeft);
   }
   const randResult = numberLeft + Math.random() * (numberRight + 1 - numberLeft);
@@ -112,4 +112,26 @@ export const generateFilters = (films) => films.reduce((acc, currentFilm) => {
   return acc;
 }, initialFilters);
 
-export const isEscapeEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+export const sortByKey = (array, key, typeValueOfKey) => {
+  const sortArray = array.slice();
+
+  if (typeValueOfKey === 'valueArray') {
+    sortArray.sort((a, b) => b[key].length - a[key].length);
+  }
+  if (typeValueOfKey === 'value') {
+    sortArray.sort((a, b) => b[key] - a[key]);
+  }
+
+  return sortArray;
+};
+
+export const removeComponent = (container) => {
+  container.element.remove();
+  container.removeElement();
+};
+
+export const getObjectKeyValue = (array, key, value) => {
+  const result = array.find((obj) => obj[key] === value);
+  return result;
+};
+

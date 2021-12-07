@@ -1,10 +1,10 @@
 import { createElement } from '../render.js';
 
-const createPopupCommentsListTemplate = () => (
-  '<ul class="film-details__comments-list"></ul>'
+const createFilmsListContainerTemplate = () => (
+  '<div class="films-list__container"></div>'
 );
 
-export default class PopupCommentsListView {
+export default class FilmsListContainerView {
   #element = null;
 
   get element() {
@@ -16,7 +16,7 @@ export default class PopupCommentsListView {
   }
 
   get template() {
-    return createPopupCommentsListTemplate();
+    return createFilmsListContainerTemplate();
   }
 
   removeElement() {

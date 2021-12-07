@@ -1,20 +1,41 @@
 import { createElement } from '../render.js';
 
+import PopupInfoContainerView from './popup-info-container-view.js';
+import PopupControlsView from './popup-controls-view.js';
+import PopupCommentsContainerView from './popup-comments-container-view.js';
+
 const createPopupContainerTemplate = () => (
-  `<div class="film-details__top-container">
-    <div class="film-details__close">
-      <button class="film-details__close-btn" type="button">close</button>
-    </div>
-</div>`
+  `<section class="film-details">
+    <form class="film-details__inner" action="" method="get">
+      <div class="film-details__top-container">
+        <div class="film-details__close"></div>
+      </div>
+
+      <div class="film-details__bottom-container"></div>
+    </form>
+  </section>`
 );
 
 export default class PopupContainerView {
   #element = null;
+  #film = null;
+
+  constructor(film) {
+    this.#film = film;
+  }
 
   get element() {
     if (!this.#element) {
       this.#element = createElement(this.template);
     }
+
+    this.topContainer = this.#element.querySelector('.film-details__top-container');
+    this.topContainer.append(new PopupInfoContainerView(this.#film).element);
+
+    this.topContainer.append(new PopupControlsView(this.#film.userDetails).element);
+
+    this.bottomContainer = this.#element.querySelector('.film-details__bottom-container');
+    this.bottomContainer.append(new PopupCommentsContainerView(this.#film.comments).element);
 
     return this.#element;
   }
