@@ -1,10 +1,10 @@
 import { createElement } from '../render.js';
 
-const createFilmSectionTemplate = () => (
-  '<section class="films"></section>'
+const createFilmsListContainerTemplate = () => (
+  '<div class="films-list__container"></div>'
 );
 
-export default class FilmSectionView {
+export default class FilmsListContainerView {
   #element = null;
 
   get element() {
@@ -16,7 +16,7 @@ export default class FilmSectionView {
   }
 
   get template() {
-    return createFilmSectionTemplate();
+    return createFilmsListContainerTemplate();
   }
 
   removeElement() {

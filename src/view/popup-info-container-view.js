@@ -1,4 +1,6 @@
-export const createPopupInfoContainerTemplate = (film) => (
+import { createElement } from '../render.js';
+
+const createPopupInfoContainerTemplate = (film) => (
   `<div class="film-details__info-wrap">
     <div class="film-details__poster">
       <img class="film-details__poster-img" src="${film.poster}" alt="">
@@ -55,5 +57,30 @@ export const createPopupInfoContainerTemplate = (film) => (
         ${film.description}
       </p>
     </div>
-</div>`
+  </div>`
 );
+
+export default class PopupInfoContainerView {
+  #element = null;
+  #film = null;
+
+  constructor(film) {
+    this.#film = film;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPopupInfoContainerTemplate(this.#film);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

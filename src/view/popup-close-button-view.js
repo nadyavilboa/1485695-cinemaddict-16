@@ -1,10 +1,12 @@
 import { createElement } from '../render.js';
 
-const createFilmSectionTemplate = () => (
-  '<section class="films"></section>'
+const createPopupCloseButtonTemplate = () => (
+  `<button class="film-details__close-btn" type="button">
+    close
+  </button>`
 );
 
-export default class FilmSectionView {
+export default class PopupCloseButtonView {
   #element = null;
 
   get element() {
@@ -16,7 +18,7 @@ export default class FilmSectionView {
   }
 
   get template() {
-    return createFilmSectionTemplate();
+    return createPopupCloseButtonTemplate();
   }
 
   removeElement() {

@@ -12,24 +12,30 @@ const UserRankLevels = {
 };
 
 export const getRandomInteger = (numberLeft, numberRight) => {
-  if(numberLeft === numberRight) {
+  if (numberLeft === numberRight) {
     return numberLeft;
   }
-  if(numberLeft > numberRight) {
+  if (numberLeft > numberRight) {
     getRandomInteger(numberRight, numberLeft);
   }
   const randResult = numberLeft + Math.random() * (numberRight + 1 - numberLeft);
   return Math.floor(randResult);
 };
 
-export const getRandomElements = (array) => {
+export const getRandomElements = (array, numberLeft = 1, numberRight = array.length) => {
   const randomArray = [];
-  const length = getRandomInteger(1, array.length);
-  let count = 0;
-  while (count < length) {
-    const number = getRandomInteger(1, array.length) - 1;
-    randomArray.push(array[number]);
-    count++;
+  let number = Math.abs(getRandomInteger(numberLeft, numberRight) - 1);
+  let length = Math.abs(getRandomInteger(numberLeft, numberRight));
+  if (number > length) {
+    const swapper = number;
+    number = length;
+    length = swapper;
+  }
+  if (number === length) {
+    length++;
+  }
+  for (let i = number; i < length; i++) {
+    randomArray.push(array[i]);
   }
   return randomArray;
 };
@@ -58,6 +64,16 @@ export const addIdObjects = (array) => {
   });
 };
 
+export const generateCommentsFilm = (comments) => {
+  const commentsFilm = [];
+  getRandomElements(comments, 0, 5).forEach((element) => {
+    if (element) {
+      commentsFilm.push(element.id);
+    }
+  });
+  return commentsFilm;
+};
+
 export const getUrlImage = (folder, namesFiles) => {
   const numberFilm = getRandomInteger(1, namesFiles.length) - 1;
   return `${folder}${namesFiles[numberFilm]}`;
@@ -68,12 +84,54 @@ export const getRandomDate = (maxDateGap, dateType) => {
   return dayjs().add(dateGap, dateType).toDate();
 };
 
-//console.log(dayjs().format('YYYY/MM/DD HH:mm'));
-//console.log(dayjs().format('D MMMM YYYY'));
-//console.log(dayjs().format('H:mm'));
+const isFilmInWatchlist = (film) => Boolean(film.userDetails.watchlist);
 
-export const isFilmInWatchlist = (film) => Boolean(film.userDetails.watchlist);
+const isFilmWatched = (film) => Boolean(film.userDetails.alreadyWatched);
 
-export const isFilmWatched = (film) => Boolean(film.userDetails.alreadyWatched);
+const isFilmFavorite = (film) => Boolean(film.userDetails.favorite);
 
-export const isFilmFavorite = (film) => Boolean(film.userDetails.favorite);
+const initialFilters = {
+  watchlist: 0,
+  history: 0,
+  favorites: 0,
+};
+
+export const generateFilters = (films) => films.reduce((acc, currentFilm) => {
+  if (isFilmInWatchlist(currentFilm)) {
+    acc.watchlist++;
+  }
+
+  if (isFilmWatched(currentFilm)) {
+    acc.history++;
+  }
+
+  if (isFilmFavorite(currentFilm)) {
+    acc.favorites++;
+  }
+
+  return acc;
+}, initialFilters);
+
+export const sortByKey = (array, key, typeValueOfKey) => {
+  const sortArray = array.slice();
+
+  if (typeValueOfKey === 'valueArray') {
+    sortArray.sort((a, b) => b[key].length - a[key].length);
+  }
+  if (typeValueOfKey === 'value') {
+    sortArray.sort((a, b) => b[key] - a[key]);
+  }
+
+  return sortArray;
+};
+
+export const removeComponent = (container) => {
+  container.element.remove();
+  container.removeElement();
+};
+
+export const getObjectKeyValue = (array, key, value) => {
+  const result = array.find((obj) => obj[key] === value);
+  return result;
+};
+
