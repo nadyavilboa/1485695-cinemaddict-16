@@ -1,4 +1,5 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
+import { createElement } from '../utils/render.js';
 import PopupEmojiListView from './popup-emoji-list-view.js';
 import { CommentsStringData } from '../mock/comments.js';
 
@@ -14,7 +15,7 @@ const createPopupNewCommentTemplate = () => (
   </div>`
 );
 
-export default class PopupNewCommentView {
+export default class PopupNewCommentView extends AbstractView {
   #element = null;
 
   get element() {
@@ -29,9 +30,5 @@ export default class PopupNewCommentView {
 
   get template() {
     return createPopupNewCommentTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

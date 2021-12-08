@@ -1,8 +1,9 @@
-import { createElement } from '../render.js';
+import { createElement } from '../utils/render.js';
 
 import PopupInfoContainerView from './popup-info-container-view.js';
 import PopupControlsView from './popup-controls-view.js';
 import PopupCommentsContainerView from './popup-comments-container-view.js';
+import AbstractView from './abstract-view.js';
 
 const createPopupContainerTemplate = () => (
   `<section class="film-details">
@@ -16,11 +17,12 @@ const createPopupContainerTemplate = () => (
   </section>`
 );
 
-export default class PopupContainerView {
+export default class PopupContainerView extends AbstractView {
   #element = null;
   #film = null;
 
   constructor(film) {
+    super();
     this.#film = film;
   }
 
@@ -42,9 +44,5 @@ export default class PopupContainerView {
 
   get template() {
     return createPopupContainerTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

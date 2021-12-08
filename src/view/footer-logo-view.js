@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createFooterLogoTemplate = () => (
   `<section class="footer__logo logo logo--smaller">
@@ -6,22 +6,8 @@ const createFooterLogoTemplate = () => (
   </section>`
 );
 
-export default class FooterLogoView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+export default class FooterLogoView extends AbstractView {
   get template() {
     return createFooterLogoTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

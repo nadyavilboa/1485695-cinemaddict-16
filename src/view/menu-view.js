@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createFilterItemTemplate = (name, count) => (
   `<a href="#${name}" class="main-navigation__item">${name.charAt(0).toUpperCase() + name.slice(1)}
@@ -17,27 +17,15 @@ const createMenuTemplate = (filters) => {
   );
 };
 
-export default class MenuView {
-  #element = null;
+export default class MenuView extends AbstractView {
   #filters = null;
 
   constructor(filters) {
+    super();
     this.#filters = filters;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createMenuTemplate(this.#filters);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

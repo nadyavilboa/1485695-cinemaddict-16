@@ -1,4 +1,5 @@
-import { getUrlImage, getRandomInteger, getRandomElements, getRandomDate, generateCommentsFilm } from './../utils';
+import { getRandomInteger, getRandomElements, getRandomDate } from './../utils/common.js';
+import { getUrlImage, generateCommentsFilm } from '../utils/film.js';
 import { comments } from './comments.js';
 
 const FilmsStringData = {

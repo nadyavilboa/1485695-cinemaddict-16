@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createPopupControlsTemplate = (userDetails) => (
   `<section class="film-details__controls">
@@ -14,27 +14,15 @@ const createPopupControlsTemplate = (userDetails) => (
   </section>`
 );
 
-export default class PopupControlsView {
-  #element = null;
+export default class PopupControlsView extends AbstractView {
   #userDetails = null;
 
   constructor(userDetails) {
+    super();
     this.#userDetails = userDetails;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPopupControlsTemplate(this.#userDetails);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

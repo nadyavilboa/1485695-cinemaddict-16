@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomDate, addIdObjects } from '../utils';
+import { getRandomInteger, getRandomDate, addIdObjects } from '../utils/common.js';
 
 export const CommentsStringData = {
   COMMENTS_TEXT : ['Interesting setting and a good cast', 'Booooooooooring', 'Very very old. Meh', 'Almost two hours? Seriously?', 'Interesting story'],
