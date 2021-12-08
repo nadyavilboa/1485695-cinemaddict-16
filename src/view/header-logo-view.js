@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createHeaderLogoTemplate = () => (
   `<h1 class="header__logo logo">
@@ -6,22 +6,8 @@ const createHeaderLogoTemplate = () => (
   </h1>`
 );
 
-export default class HeaderLogoView {
-  #element = null;
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
+export default class HeaderLogoView extends AbstractView {
   get template() {
     return createHeaderLogoTemplate();
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const MAX_LENGTH_VISIBLE_DESCRIPTION = 140;
 
@@ -24,27 +24,25 @@ const createFilmTemplate = (film) => (
   </article>`
 );
 
-export default class FilmView {
-  #element = null;
+export default class FilmView extends AbstractView {
   #film = null;
 
   constructor(film) {
+    super();
     this.#film = film;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFilmTemplate(this.#film);
   }
 
-  removeElement() {
-    this.#element = null;
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  }
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 }

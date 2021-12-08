@@ -1,9 +1,10 @@
-import { createElement } from '../render.js';
+import { createElement } from '../utils/render.js';
 import PopupCommentView from './popup-comment-view';
 import PopupNewCommentView from './popup-new-comment-view.js';
-import { getObjectKeyValue } from '../utils.js';
+import { getObjectKeyValue } from '../utils/common.js';
 
 import { comments } from '../mock/comments.js';
+import AbstractView from './abstract-view.js';
 
 const createPopupCommentsContainerTemplate = (commentsId) => (
   `<section class="film-details__comments-wrap">
@@ -15,11 +16,12 @@ const createPopupCommentsContainerTemplate = (commentsId) => (
   </section>`
 );
 
-export default class PopupCommentsContainerView {
+export default class PopupCommentsContainerView extends AbstractView {
   #element = null;
   #commentsId = null;
 
   constructor(commentsId) {
+    super();
     this.#commentsId = commentsId;
   }
 
@@ -39,10 +41,6 @@ export default class PopupCommentsContainerView {
 
   get template() {
     return createPopupCommentsContainerTemplate(this.#commentsId);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

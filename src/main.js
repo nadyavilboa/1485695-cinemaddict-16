@@ -13,8 +13,9 @@ import ButtonShowMoreView from './view/button-show-more-view.js';
 import PopupContainerView from './view/popup-container-view';
 import PopupCloseButtonView from './view/popup-close-button-view.js';
 import { generateFilm } from './mock/film.js';
-import { addIdObjects, getActualRank, generateFilters, sortByKey, removeComponent } from './utils.js';
-import { renderElement } from './render.js';
+import { addIdObjects, sortByKey } from './utils/common.js';
+import { getActualRank, generateFilters } from './utils/film.js';
+import { renderElement, removeComponent } from './utils/render.js';
 import FilmsListContainerView from './view/films-list-container-view.js';
 
 const body = document.querySelector('body');
@@ -45,26 +46,26 @@ addIdObjects(films);
 const filters = generateFilters(films);
 const userRank = getActualRank(filters.history);
 
-renderElement(headerElement, new HeaderLogoView().element);
+renderElement(headerElement, new HeaderLogoView());
 
 if (films.length !== 0) {
-  renderElement(headerElement, new HeaderProfileView(userRank).element);
+  renderElement(headerElement, new HeaderProfileView(userRank));
 }
 
 const menuContainerComponent = new MenuContainerView();
-renderElement(siteMainElement, menuContainerComponent.element);
-renderElement(menuContainerComponent.element, new MenuView(filters).element);
+renderElement(siteMainElement, menuContainerComponent);
+renderElement(menuContainerComponent, new MenuView(filters));
 
-renderElement(menuContainerComponent.element, new MenuStatsView().element);
+renderElement(menuContainerComponent, new MenuStatsView());
 
-renderElement(siteMainElement, new SortView().element);
+renderElement(siteMainElement, new SortView());
 
-renderElement(footerElement, new FooterLogoView().element);
+renderElement(footerElement, new FooterLogoView());
 
-renderElement(footerElement, new FooterStatisticsView(FILMS_ALL_COUNT).element);
+renderElement(footerElement, new FooterStatisticsView(FILMS_ALL_COUNT));
 
 const filmsSectionComponent = new FilmSectionView();
-renderElement(siteMainElement, filmsSectionComponent.element);
+renderElement(siteMainElement, filmsSectionComponent);
 
 const onEscKeyDown = (evt) => {
   if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -80,14 +81,13 @@ const renderPopup = (film) => {
   document.addEventListener('keydown', onEscKeyDown);
 
   const popupContainerComponent = new PopupContainerView(film);
-  renderElement(body, popupContainerComponent.element);
+  renderElement(body, popupContainerComponent);
 
   const buttonContainer = body.querySelector('.film-details__close');
-  const popupCloseButton = new PopupCloseButtonView().element;
+  const popupCloseButton = new PopupCloseButtonView();
   renderElement(buttonContainer, popupCloseButton);
 
-  popupCloseButton.addEventListener('click', (evt) => {
-    evt.preventDefault();
+  popupCloseButton.setClickHandler(() => {
     body.classList.remove('hide-owerflow');
     removeComponent(popupContainerComponent);
   });
@@ -96,9 +96,9 @@ const renderListFilms = (container, filmsToRender) => {
   const filmsContainerElement = container.querySelector('.films-list__container');
 
   filmsToRender.forEach((film) => {
-    const filmCard = new FilmView(film).element;
+    const filmCard = new FilmView(film);
     renderElement(filmsContainerElement, filmCard);
-    filmCard.addEventListener('click', () => renderPopup(film));
+    filmCard.setClickHandler(() => renderPopup(film));
   });
 };
 
@@ -108,13 +108,13 @@ const showMoreFilms = (filmsToRender) => {
 };
 
 const buildEmptyContainer = (title, isExtra) => {
-  renderElement(filmsSectionComponent.element, new FilmsContainerView(title, isExtra).element);
+  renderElement(filmsSectionComponent, new FilmsContainerView(title, isExtra));
 };
 
 const buildContainer = (title, isExtra, filmsToRender) => {
-  renderElement(filmsSectionComponent.element, new FilmsContainerView(title, isExtra).element);
+  renderElement(filmsSectionComponent, new FilmsContainerView(title, isExtra));
   const filmsListElement = filmsSectionComponent.element.querySelector('.films-list:last-child');
-  renderElement(filmsListElement, new FilmsListContainerView().element);
+  renderElement(filmsListElement, new FilmsListContainerView());
 
   if (isExtra) {
     renderListFilms(filmsListElement, filmsToRender.slice(0, FILMS_EXTRA_AMOUNT));
@@ -125,11 +125,11 @@ const buildContainer = (title, isExtra, filmsToRender) => {
       let renderedFilmsAmount = FILMS_AMOUNT_PER_STEP;
 
       const buttonShowMoreComponent = new ButtonShowMoreView();
-      renderElement(filmsListElement, buttonShowMoreComponent.element);
+      renderElement(filmsListElement, buttonShowMoreComponent);
 
-      buttonShowMoreComponent.element.addEventListener('click', (evt) => {
-        evt.preventDefault();
-        showMoreFilms(filmsToRender.slice(renderedFilmsAmount, renderedFilmsAmount + FILMS_AMOUNT_PER_STEP));
+      buttonShowMoreComponent.setClickHandler(() => {
+        showMoreFilms(filmsToRender
+          .slice(renderedFilmsAmount, renderedFilmsAmount + FILMS_AMOUNT_PER_STEP));
 
         renderedFilmsAmount += FILMS_AMOUNT_PER_STEP;
 
