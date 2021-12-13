@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomElements, getRandomDate } from './../utils/common.js';
 import { getUrlImage, generateCommentsFilm } from '../utils/film.js';
 import { comments } from './comments.js';
@@ -33,7 +34,7 @@ const getRating = () => {
 };
 
 export const generateFilm = () => ({
-  id: 0,
+  id: nanoid(),
   comments: generateCommentsFilm(comments),
   poster: getUrlImage(FilmsStringData.FILMS_POSTERS_FOLDER, FilmsStringData.FILMS_POSTERS),
   title: FilmsStringData.FILMS_TITLES[getRandomInteger(1, FilmsStringData.FILMS_TITLES.length) - 1],
@@ -51,7 +52,7 @@ export const generateFilm = () => ({
   genres: getRandomElements(FilmsStringData.FILMS_GENRE),
   description: getRandomElements(FilmsStringData.FILMS_DESCRIPTIONS).join(''),
   userDetails: {
-    watchlist: Boolean(getRandomInteger(0, 1)),
+    watchList: Boolean(getRandomInteger(0, 1)),
     alreadyWatched: Boolean(getRandomInteger(0, 1)),
     watchingDate: getRandomDate(FilmsNumberData.MAX_DAY_GAP, 'day'),
     favorite: Boolean(getRandomInteger(0, 1)),
