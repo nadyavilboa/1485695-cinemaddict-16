@@ -41,16 +41,15 @@ export const getRandomDate = (maxDateGap, dateType) => {
 };
 
 export const sortByKey = (array, key, typeValueOfKey) => {
-  const sortArray = array.slice();
 
   if (typeValueOfKey === 'valueArray') {
-    sortArray.sort((a, b) => b[key].length - a[key].length);
+    array.sort((a, b) => b[key].length - a[key].length);
   }
   if (typeValueOfKey === 'value') {
-    sortArray.sort((a, b) => b[key] - a[key]);
+    array.sort((a, b) => b[key] - a[key]);
   }
 
-  return sortArray;
+  return array;
 };
 
 export const getObjectKeyValue = (array, key, value) => {

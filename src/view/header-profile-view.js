@@ -1,3 +1,4 @@
+import { getActualRank } from '../utils/film.js';
 import AbstractView from './abstract-view.js';
 
 const createHeaderProfileTemplate = (rank) => (
@@ -8,14 +9,22 @@ const createHeaderProfileTemplate = (rank) => (
 );
 
 export default class HeaderProfileView extends AbstractView {
+  #films = null;
+  #filmsWatchedCount = null;
   #rank = null;
 
-  constructor(rank) {
+  constructor(filmsWatchedCount, films) {
     super();
-    this.#rank = rank;
+    this.#filmsWatchedCount = filmsWatchedCount;
+    this.#films = films;
   }
 
   get template() {
+    if (this.#films.length > 0) {
+      this.#rank = getActualRank(this.#filmsWatchedCount);
+    } else {
+      this.#rank = '';
+    }
     return createHeaderProfileTemplate(this.#rank);
   }
 }

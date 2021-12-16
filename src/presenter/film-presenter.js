@@ -57,6 +57,10 @@ export default class FilmPresenter {
     removeComponent(prevFilmComponent);
   }
 
+  destroy = () => {
+    removeComponent(this.#filmComponent);
+  }
+
   #renderPopup = (film) => {
     this.#onClose();
     document.body.classList.add('hide-overflow');
@@ -69,26 +73,17 @@ export default class FilmPresenter {
 
     this.#popupContainerComponent.setWatchListClickHandler(() => {
       const changeUserDetails = {...this.#film.userDetails, watchList: !this.#film.userDetails.watchList };
-      this.#changeData({...this.#film, userDetails: changeUserDetails});
-
-      this.#popupControls = new PopupControlsView(changeUserDetails);
-      replace(this.#popupControls, this.#userDetailsComponent);
+      this.#userDetailsComponentUpdate(changeUserDetails);
     });
 
     this.#popupContainerComponent.setWatchedClickHandler(() => {
       const changeUserDetails = {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
-      this.#changeData({...this.#film, userDetails: changeUserDetails});
-
-      this.#popupControls = new PopupControlsView(changeUserDetails);
-      replace(this.#popupControls, this.#userDetailsComponent);
+      this.#userDetailsComponentUpdate(changeUserDetails);
     });
 
     this.#popupContainerComponent.setFavoriteClickHandler(() => {
       const changeUserDetails = {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite };
-      this.#changeData({...this.#film, userDetails: changeUserDetails});
-
-      this.#popupControls = new PopupControlsView(changeUserDetails);
-      replace(this.#popupControls, this.#userDetailsComponent);
+      this.#userDetailsComponentUpdate(changeUserDetails);
     });
 
     this.#renderPopupCloseButton();
@@ -112,5 +107,11 @@ export default class FilmPresenter {
     if (isEscapeEvent(key)) {
       this.#onClose();
     }
+  }
+
+  #userDetailsComponentUpdate = (changeUserDetails) => {
+    this.#changeData({...this.#film, userDetails: changeUserDetails});
+    this.#popupControls = new PopupControlsView(changeUserDetails);
+    replace(this.#popupControls, this.#userDetailsComponent);
   }
 }

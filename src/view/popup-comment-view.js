@@ -9,7 +9,7 @@ const createPopupCommentTemplate = (comment) => (
       <p class="film-details__comment-text">${comment.comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
-        <span class="film-details__comment-day">${comment.date}</span>
+        <span class="film-details__comment-day">${comment.date.toLocaleDateString('en-US')}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>

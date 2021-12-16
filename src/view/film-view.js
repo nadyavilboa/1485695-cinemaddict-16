@@ -1,4 +1,5 @@
 import AbstractView from './abstract-view.js';
+import dayjs from 'dayjs';
 
 const MAX_LENGTH_VISIBLE_DESCRIPTION = 140;
 
@@ -8,7 +9,7 @@ const createFilmTemplate = (film) => (
       <h3 class="film-card__title">${film.title}</h3>
       <p class="film-card__rating">${film.totalRating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${film.release.date}</span>
+        <span class="film-card__year">${dayjs(film.release.date).format('dd-mm')}</span>
         <span class="film-card__duration">${film.runtime}</span>
         <span class="film-card__genre">${film.genres.join(', ')}</span>
       </p>
