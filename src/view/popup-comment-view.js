@@ -1,4 +1,5 @@
 import AbstractView from './abstract-view.js';
+import dayjs from 'dayjs';
 
 const createPopupCommentTemplate = (comment) => (
   `<li class="film-details__comment">
@@ -9,7 +10,7 @@ const createPopupCommentTemplate = (comment) => (
       <p class="film-details__comment-text">${comment.comment}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${comment.author}</span>
-        <span class="film-details__comment-day">${comment.date.toLocaleDateString('en-US')}</span>
+        <span class="film-details__comment-day">${dayjs(comment.date).format('DD/MM/YYYY hh:mm')}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>

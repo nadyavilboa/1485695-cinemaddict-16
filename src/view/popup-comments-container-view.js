@@ -1,4 +1,4 @@
-import { createElement } from '../utils/render.js';
+import { createElement, renderElement } from '../utils/render.js';
 import PopupCommentView from './popup-comment-view';
 import PopupNewCommentView from './popup-new-comment-view.js';
 import { getObjectKeyValue } from '../utils/common.js';
@@ -32,9 +32,9 @@ export default class PopupCommentsContainerView extends AbstractView {
 
     this.commentsList = this.#element.querySelector('.film-details__comments-list');
     this.#commentsId.forEach((commentId) =>
-      this.commentsList.append(new PopupCommentView(getObjectKeyValue(comments, 'id', commentId)).element));
+      renderElement(this.commentsList, new PopupCommentView(getObjectKeyValue(comments, 'id', commentId))));
 
-    this.#element.append(new PopupNewCommentView().element);
+    renderElement(this.#element, new PopupNewCommentView());
 
     return this.#element;
   }

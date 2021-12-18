@@ -3,7 +3,6 @@ import HeaderProfileView from './view/header-profile-view.js';
 import MenuContainerView from './view/menu-container-view.js';
 import MenuView from './view/menu-view.js';
 import MenuStatsView from './view/menu-stats-view.js';
-import SortView from './view/sort-view.js';
 import FooterLogoView from './view/footer-logo-view';
 import FooterStatisticsView from './view/footer-statistics-view.js';
 import { generateFilm } from './mock/film.js';

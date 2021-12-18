@@ -1,4 +1,5 @@
 import AbstractView from './abstract-view.js';
+import { createElement } from '../utils/render.js';
 
 export const SortType = {
   DEFAULT: 'default',
@@ -27,6 +28,18 @@ const createSortTemplate = () => (
 );
 
 export default class SortView extends AbstractView {
+  #element = null;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    this.sortButtons = this.#element.querySelectorAll('.sort__button');
+
+    return this.#element;
+  }
+
   get template() {
     return createSortTemplate();
   }
@@ -43,5 +56,9 @@ export default class SortView extends AbstractView {
 
     evt.preventDefault();
     this._callback.sortTypeChange(evt.target.dataset.sortType);
+
+    this.sortButtons.forEach(
+      (button) => button.classList.remove('sort__button--active'));
+    evt.target.classList.add('sort__button--active');
   }
 }

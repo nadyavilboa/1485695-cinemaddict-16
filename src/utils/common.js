@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+const AMOUNT_MINUTES_IN_HOUR = 60;
+
 export const getRandomInteger = (numberLeft, numberRight) => {
   if (numberLeft === numberRight) {
     return numberLeft;
@@ -40,17 +42,26 @@ export const getRandomDate = (maxDateGap, dateType) => {
   return dayjs().add(dateGap, dateType).toDate();
 };
 
-export const sortByKey = (array, key, typeValueOfKey) => {
-
-  if (typeValueOfKey === 'valueArray') {
-    array.sort((a, b) => b[key].length - a[key].length);
+export const countHourInDuration = (valueInteger) => {
+  const countHour = Math.floor(valueInteger / AMOUNT_MINUTES_IN_HOUR);
+  if (countHour !== 0) {
+    return `${String(countHour)  }h`;
   }
-  if (typeValueOfKey === 'value') {
-    array.sort((a, b) => b[key] - a[key]);
-  }
-
-  return array;
 };
+
+export const countMinutesInDuration = (valueInteger) => {
+  const countMinutes = valueInteger % AMOUNT_MINUTES_IN_HOUR;
+  if (countMinutes !== 0) {
+    return `${String(countMinutes)  }m`;
+  }
+};
+
+export const sortByDate = (firstFilm, secondFilm) => dayjs(secondFilm.release.date).diff(dayjs(firstFilm.release.date));
+
+
+export const sortByRating = (firstFilm, secondFilm) => secondFilm.totalRating - firstFilm.totalRating;
+
+export const sortByAmountComments = (firstFilm, secondFilm) => secondFilm.comments.length - firstFilm.comments.length;
 
 export const getObjectKeyValue = (array, key, value) => {
   const result = array.find((obj) => obj[key] === value);

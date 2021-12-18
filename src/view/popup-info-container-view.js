@@ -1,4 +1,6 @@
 import AbstractView from './abstract-view.js';
+import { countHourInDuration, countMinutesInDuration } from '../utils/common.js';
+import dayjs from 'dayjs';
 
 const createPopupInfoContainerTemplate = (film) => (
   `<div class="film-details__info-wrap">
@@ -35,11 +37,14 @@ const createPopupInfoContainerTemplate = (film) => (
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Release Date</td>
-          <td class="film-details__cell">${film.release.date}</td>
+          <td class="film-details__cell">${dayjs(film.release.date).format('DD MMMM YYYY')}</td>
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Runtime</td>
-          <td class="film-details__cell">1h 18m</td>
+          <td class="film-details__cell">
+            ${countHourInDuration(film.runtime) ? countHourInDuration(film.runtime) : ''}
+            ${countMinutesInDuration(film.runtime) ? countMinutesInDuration(film.runtime) : ''}
+          </td>
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Country</td>
