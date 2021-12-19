@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view.js';
-import { createElement } from '../utils/render.js';
+import { createElement, renderElement } from '../utils/render.js';
 import PopupEmojiListView from './popup-emoji-list-view.js';
 import { CommentsStringData } from '../mock/comments.js';
 
@@ -23,7 +23,7 @@ export default class PopupNewCommentView extends AbstractView {
       this.#element = createElement(this.template);
     }
 
-    this.#element.append(new PopupEmojiListView(CommentsStringData.COMMENTS_EMOTION, false).element);
+    renderElement(this.#element, new PopupEmojiListView(CommentsStringData.COMMENTS_EMOTION, false));
 
     return this.#element;
   }

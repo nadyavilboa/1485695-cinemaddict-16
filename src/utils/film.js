@@ -50,7 +50,7 @@ export const getUrlImage = (folder, namesFiles) => {
   return `${folder}${namesFiles[numberFilm]}`;
 };
 
-const isFilmInWatchList = (film) => Boolean(film.userDetails.watchlist);
+const isFilmInWatchList = (film) => Boolean(film.userDetails.watchList);
 
 const isFilmWatched = (film) => Boolean(film.userDetails.alreadyWatched);
 
@@ -58,7 +58,7 @@ const isFilmFavorite = (film) => Boolean(film.userDetails.favorite);
 
 export const generateFilters = (films) => films.reduce((acc, currentFilm) => {
   if (isFilmInWatchList(currentFilm)) {
-    acc.watchList++;
+    acc.watchlist++;
   }
 
   if (isFilmWatched(currentFilm)) {

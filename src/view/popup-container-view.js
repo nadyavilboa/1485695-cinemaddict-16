@@ -1,4 +1,4 @@
-import { createElement } from '../utils/render.js';
+import { createElement, removeComponent, renderElement } from '../utils/render.js';
 
 import PopupInfoContainerView from './popup-info-container-view.js';
 import PopupControlsView from './popup-controls-view.js';
@@ -20,6 +20,7 @@ const createPopupContainerTemplate = () => (
 export default class PopupContainerView extends AbstractView {
   #element = null;
   #film = null;
+  #popupControls = null;
 
   constructor(film) {
     super();
@@ -32,12 +33,13 @@ export default class PopupContainerView extends AbstractView {
     }
 
     this.topContainer = this.#element.querySelector('.film-details__top-container');
-    this.topContainer.append(new PopupInfoContainerView(this.#film).element);
+    renderElement(this.topContainer, new PopupInfoContainerView(this.#film));
 
-    this.topContainer.append(new PopupControlsView(this.#film.userDetails).element);
+    this.#popupControls = new PopupControlsView(this.#film.userDetails);
+    renderElement(this.topContainer, this.#popupControls);
 
     this.bottomContainer = this.#element.querySelector('.film-details__bottom-container');
-    this.bottomContainer.append(new PopupCommentsContainerView(this.#film.comments).element);
+    renderElement(this.bottomContainer, new PopupCommentsContainerView(this.#film.comments));
 
     return this.#element;
   }
@@ -77,5 +79,11 @@ export default class PopupContainerView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
+  }
+
+  rerenderControls = (changeUserDetails) => {
+    removeComponent(this.#popupControls);
+    this.#popupControls = new PopupControlsView(changeUserDetails);
+    renderElement(this.topContainer, this.#popupControls);
   }
 }
