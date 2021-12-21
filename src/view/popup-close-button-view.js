@@ -7,6 +7,7 @@ const createPopupCloseButtonTemplate = () => (
 );
 
 export default class PopupCloseButtonView extends AbstractView {
+
   get template() {
     return createPopupCloseButtonTemplate();
   }

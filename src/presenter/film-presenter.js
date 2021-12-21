@@ -1,4 +1,4 @@
-import PopupContainerView from '../view/popup-container-view.js';
+import PopupView from '../view/popup-view.js';
 import PopupCloseButtonView from '../view/popup-close-button-view.js';
 import FilmView from '../view/film-view.js';
 import { renderElement, removeComponent, replace } from '../utils/render.js';
@@ -13,14 +13,14 @@ export default class FilmPresenter {
   #filmsListContainer = null;
   #filmComponent = null;
   #film = null;
+  #newComment = null;
 
   #popupMode = PopupMode.POPUP_CLOSE;
 
   #changeData = null;
   #changeMode = null;
 
-  #popupContainerComponent = null;
-  #popupCloseButton = null;
+  #popupComponent = null;
 
   constructor (filmsListContainer, changeData, changeMode) {
     this.#filmsListContainer = filmsListContainer;
@@ -28,14 +28,15 @@ export default class FilmPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (film) => {
+  init = (film, newComment) => {
     this.#film = film;
+    this.#newComment = newComment;
 
     const prevFilmComponent = this.#filmComponent;
 
-    this.#filmComponent = new FilmView(film);
+    this.#filmComponent = new FilmView(film, newComment);
     this.#filmComponent.setClickHandler(() => {
-      this.#renderPopup(film);
+      this.#renderPopup(film, newComment);
     });
 
     this.#filmComponent.setWatchListClickHandler(() => {
@@ -72,30 +73,20 @@ export default class FilmPresenter {
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
 
-    this.#popupContainerComponent = new PopupContainerView(film);
-    renderElement(document.body, this.#popupContainerComponent);
+    this.#popupComponent = new PopupView(film);
+    renderElement(document.body, this.#popupComponent);
 
-    this.#popupContainerComponent.setWatchListClickHandler(() => {
-      this.#buttonWatchListClickHandler();
-    });
+    const popupCloseContainer = document.body.querySelector('.film-details__close');
+    const popupCloseButtonComponent = new PopupCloseButtonView();
+    renderElement(popupCloseContainer, popupCloseButtonComponent);
 
-    this.#popupContainerComponent.setWatchedClickHandler(() => {
-      this.#buttonWatchedClickHandler();
-    });
+    popupCloseButtonComponent.setClickHandler(() => this.#onClose());
 
-    this.#popupContainerComponent.setFavoriteClickHandler(() => {
-      this.#buttonFavoriteClickHandler();
-    });
+    this.#popupComponent.setWatchListClickHandler(() => this.#buttonWatchListClickHandler());
 
-    this.#renderPopupCloseButton();
-  }
+    this.#popupComponent.setWatchedClickHandler(() => this.#buttonWatchedClickHandler());
 
-  #renderPopupCloseButton = () => {
-    const buttonContainer = document.body.querySelector('.film-details__close');
-    this.#popupCloseButton = new PopupCloseButtonView();
-    renderElement(buttonContainer, this.#popupCloseButton);
-
-    this.#popupCloseButton.setClickHandler(() => this.#onClose());
+    this.#popupComponent.setFavoriteClickHandler(() => this.#buttonFavoriteClickHandler());
   }
 
   resetView = () => {
@@ -105,7 +96,7 @@ export default class FilmPresenter {
   }
 
   #onClose = () => {
-    removeComponent(this.#popupContainerComponent);
+    removeComponent(this.#popupComponent);
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDown);
   }
@@ -118,30 +109,22 @@ export default class FilmPresenter {
 
   #buttonWatchListClickHandler = () => {
     const changeUserDetails = {...this.#film.userDetails, watchList: !this.#film.userDetails.watchList };
-    this.#userDetailsComponentUpdate(changeUserDetails);
+    this.#updateFilmControls(changeUserDetails);
   }
 
   #buttonWatchedClickHandler = () => {
     const changeUserDetails = {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched };
-    this.#userDetailsComponentUpdate(changeUserDetails);
+    this.#updateFilmControls(changeUserDetails);
   }
 
   #buttonFavoriteClickHandler = () => {
     const changeUserDetails = {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite };
-    this.#userDetailsComponentUpdate(changeUserDetails);
+    this.#updateFilmControls(changeUserDetails);
   }
 
-  #userDetailsComponentUpdate = (changeUserDetails) => {
-    this.#changeData({...this.#film, userDetails: changeUserDetails});
-    this.#popupContainerComponent.rerenderControls(changeUserDetails);
-
-    document.body.querySelector('.film-details__control-button--watchlist')
-      .addEventListener('click', this.#buttonWatchListClickHandler);
-
-    document.body.querySelector('.film-details__control-button--watched')
-      .addEventListener('click', this.#buttonWatchedClickHandler);
-
-    document.body.querySelector('.film-details__control-button--favorite')
-      .addEventListener('click', this.#buttonFavoriteClickHandler);
+  #updateFilmControls = (changeUserDetails) => {
+    const updateFilm = {...this.#film, userDetails: changeUserDetails};
+    this.#changeData(updateFilm);
+    this.#renderPopup(updateFilm);
   }
 }
