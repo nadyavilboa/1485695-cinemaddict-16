@@ -22,6 +22,8 @@ export default class FilmPresenter {
 
   #popupComponent = null;
 
+  #scrollPopup = null;
+
   constructor (filmsListContainer, changeData, changeMode) {
     this.#filmsListContainer = filmsListContainer;
     this.#changeData = changeData;
@@ -36,7 +38,7 @@ export default class FilmPresenter {
 
     this.#filmComponent = new FilmView(film, newComment);
     this.#filmComponent.setClickHandler(() => {
-      this.#renderPopup(film, newComment);
+      this.#renderPopup(film, this.#scrollPopup);
     });
 
     this.#filmComponent.setWatchListClickHandler(() => {
@@ -67,7 +69,7 @@ export default class FilmPresenter {
     removeComponent(this.#filmComponent);
   }
 
-  #renderPopup = (film) => {
+  #renderPopup = (film, scrollPopup) => {
     this.#popupMode = PopupMode.POPUP_OPEN;
     this.#changeMode();
     document.body.classList.add('hide-overflow');
@@ -75,6 +77,9 @@ export default class FilmPresenter {
 
     this.#popupComponent = new PopupView(film);
     renderElement(document.body, this.#popupComponent);
+
+    this.popupElement = this.#popupComponent.element;
+    this.popupElement.scrollBy(0, scrollPopup);
 
     const popupCloseContainer = document.body.querySelector('.film-details__close');
     const popupCloseButtonComponent = new PopupCloseButtonView();
@@ -125,6 +130,7 @@ export default class FilmPresenter {
   #updateFilmControls = (changeUserDetails) => {
     const updateFilm = {...this.#film, userDetails: changeUserDetails};
     this.#changeData(updateFilm);
-    this.#renderPopup(updateFilm);
+    this.scrollPopup = this.#popupComponent.scrollPosition;
+    this.#renderPopup(updateFilm, this.scrollPopup);
   }
 }

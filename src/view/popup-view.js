@@ -174,6 +174,7 @@ const createPopupTemplate = (film) => {
 
 export default class PopupView extends AbstractView {
   #film = null;
+  scrollPosition = 0;
 
   constructor(film) {
     super();
@@ -228,16 +229,19 @@ export default class PopupView extends AbstractView {
 
   #watchListClickHandler = (evt) => {
     evt.preventDefault();
+    this.scrollPosition = this.element.scrollHeight;
     this._callback.watchListClick();
   }
 
   #watchedClickHandler = (evt) => {
     evt.preventDefault();
+    this.scrollPosition = this.element.scrollHeight;
     this._callback.watchedClick();
   }
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
+    this.scrollPosition = this.element.scrollHeight;
     this._callback.favoriteClick();
   }
 
