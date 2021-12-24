@@ -18,7 +18,9 @@ const createFilmTemplate = (film) => (
         <span class="film-card__genre">${film.genres.join(', ')}</span>
       </p>
       <img src="${film.poster}" alt="" class="film-card__poster">
-      <p class="film-card__description">${film.description.length > MAX_LENGTH_VISIBLE_DESCRIPTION ? film.description.slice(0, MAX_LENGTH_VISIBLE_DESCRIPTION - 1) : film.description}${film.description.length > MAX_LENGTH_VISIBLE_DESCRIPTION ? '…' : ''}</p>
+      <p class="film-card__description">
+        ${film.description.length > MAX_LENGTH_VISIBLE_DESCRIPTION ? film.description.slice(0, MAX_LENGTH_VISIBLE_DESCRIPTION - 1) : film.description}${film.description.length > MAX_LENGTH_VISIBLE_DESCRIPTION ? '…' : ''}
+      </p>
       <span class="film-card__comments">${film.comments.length} comments</span>
     </a>
     <div class="film-card__controls">
