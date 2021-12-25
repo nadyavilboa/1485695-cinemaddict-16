@@ -1,26 +1,33 @@
 import AbstractView from './abstract-view.js';
 import { createElement } from '../utils/render.js';
-
-export const SortType = {
-  DEFAULT: 'default',
-  TO_DATE: 'to-date',
-  TO_RATING: 'to-rating',
-};
+import { SortType } from '../const.js';
 
 const createSortTemplate = () => (
   `<ul class="sort">
     <li>
-      <a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">
+      <a
+        href="#"
+        class="sort__button sort__button--active"
+        data-sort-type="${SortType.DEFAULT}"
+      >
         Sort by default
       </a>
     </li>
     <li>
-      <a href="#" class="sort__button" data-sort-type="${SortType.TO_DATE}">
+      <a
+        href="#"
+        class="sort__button"
+        data-sort-type="${SortType.TO_DATE}"
+      >
         Sort by date
       </a>
     </li>
     <li>
-      <a href="#" class="sort__button" data-sort-type="${SortType.TO_RATING}">
+      <a
+        href="#"
+        class="sort__button"
+        data-sort-type="${SortType.TO_RATING}"
+      >
         Sort by rating
       </a>
     </li>

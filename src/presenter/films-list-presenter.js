@@ -5,7 +5,7 @@ import SortView from '../view/sort-view.js';
 import ButtonShowMoreView from '../view/button-show-more-view.js';
 import FilmPresenter from './film-presenter.js';
 import { sortByAmountComments, sortByDate, sortByRating, updateItem } from '../utils/common.js';
-import { SortType } from '../view/sort-view.js';
+import { SortType } from '../const.js';
 import { renderElement, removeComponent } from '../utils/render.js';
 
 const FILMS_AMOUNT_PER_STEP = 5;
@@ -68,7 +68,8 @@ export default class FilmsListPresenter {
     if (isExtra) {
       this.#renderListFilms(filmsListElement, filmsToRender.slice(0, FILMS_EXTRA_AMOUNT));
     } else {
-      this.#renderListFilms(filmsListElement, filmsToRender.slice(0, Math.min(this.#films.length, FILMS_AMOUNT_PER_STEP)));
+      this.#renderListFilms(filmsListElement, filmsToRender.slice(0,
+        Math.min(this.#films.length, FILMS_AMOUNT_PER_STEP)));
 
       this.#renderButtonShowMore(filmsListElement, filmsToRender);
     }

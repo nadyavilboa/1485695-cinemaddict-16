@@ -11,7 +11,6 @@ const createPopupCommentsContainerTemplate = (commentsId) => (
     <h3 class="film-details__comments-title">Comments
       <span class="film-details__comments-count">${commentsId.length}</span>
     </h3>
-
     <ul class="film-details__comments-list"></ul>
   </section>`
 );
@@ -31,8 +30,8 @@ export default class PopupCommentsContainerView extends AbstractView {
     }
 
     this.commentsList = this.#element.querySelector('.film-details__comments-list');
-    this.#commentsId.forEach((commentId) =>
-      renderElement(this.commentsList, new PopupCommentView(getObjectKeyValue(comments, 'id', commentId))));
+    this.#commentsId.forEach((commentId) => renderElement(this.commentsList,
+      new PopupCommentView(getObjectKeyValue(comments, 'id', commentId))));
 
     renderElement(this.#element, new PopupNewCommentView());
 
@@ -43,4 +42,3 @@ export default class PopupCommentsContainerView extends AbstractView {
     return createPopupCommentsContainerTemplate(this.#commentsId);
   }
 }
-
