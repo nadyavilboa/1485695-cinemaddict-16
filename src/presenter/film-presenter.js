@@ -32,13 +32,11 @@ export default class FilmPresenter {
     const prevFilmComponent = this.#filmComponent;
 
     this.#filmComponent = new FilmView(film);
-    this.#filmComponent.setClickHandler(() => {
-      this.#renderPopup(film, this.#changeFilmCardWatchList, this.#changeFilmCardWatched, this.#changeFilmCardFavorite);
+    this.#filmComponent.setFilmCardClickHandler(() => {
+      this.#renderPopup(film, this.#changeFilmCard);
     });
 
-    this.#filmComponent.setWatchListClickHandler(this.#changeFilmCardWatchList);
-    this.#filmComponent.setWatchedClickHandler(this.#changeFilmCardWatched);
-    this.#filmComponent.setFavoriteClickHandler(this.#changeFilmCardFavorite);
+    this.#filmComponent.setControlClickHandler(this.#changeFilmCard);
 
     if (prevFilmComponent === null) {
       renderElement(this.#filmsListContainer, this.#filmComponent);
@@ -53,13 +51,13 @@ export default class FilmPresenter {
     removeComponent(this.#filmComponent);
   }
 
-  #renderPopup = (film, watchListPopupClickHandler, watchedPopupClickHandler, favoriteClickHandler) => {
+  #renderPopup = (film, updateFilmCard) => {
     this.#popupMode = PopupMode.POPUP_OPEN;
     this.#changeMode();
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
 
-    this.#popupContainerComponent = new PopupContainerView(film, watchListPopupClickHandler, watchedPopupClickHandler, favoriteClickHandler);
+    this.#popupContainerComponent = new PopupContainerView(film, updateFilmCard);
     renderElement(document.body, this.#popupContainerComponent);
 
     this.#popupContainerComponent.setCloseClickHandler(this.#closePopup);
@@ -83,15 +81,7 @@ export default class FilmPresenter {
     }
   }
 
-  #changeFilmCardWatchList = () => {
-    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, watchList: !this.#film.userDetails.watchList }});
-  }
-
-  #changeFilmCardWatched = () => {
-    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }})
-  }
-
-  #changeFilmCardFavorite = () => {
-    this.#changeData({...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite }});
+  #changeFilmCard = (newDetailsData) => {
+    this.#changeData({...this.#film, userDetails: {...newDetailsData }});
   }
 }

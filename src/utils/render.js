@@ -24,6 +24,8 @@ export const renderElement = (container, element, place = RenderPosition.BEFORE_
     case RenderPosition.AFTER_END:
       parent.after(child);
       break;
+    default:
+      throw new Error(`Unknown place type ${place}`);
   }
 };
 

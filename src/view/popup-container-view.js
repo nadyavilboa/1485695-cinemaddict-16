@@ -19,17 +19,13 @@ export default class PopupContainerView extends AbstractView {
   #element = null;
   #film = null;
 
-  #changeFilmCardWatchList = null;
-  #changeFilmCardWatched = null;
-  #changeFilmCardFavorite = null;
+  #updateFilmCard = null;
 
-  constructor(film, changeFilmCardWatchList, changeFilmCardWatched, changeFilmCardFavorite) {
+  constructor(film, updateFilmCard) {
     super();
     this.#film = film;
 
-    this.#changeFilmCardWatchList = changeFilmCardWatchList;
-    this.#changeFilmCardWatched = changeFilmCardWatched;
-    this.#changeFilmCardFavorite = changeFilmCardFavorite;
+    this.#updateFilmCard = updateFilmCard;
   }
 
   get element() {
@@ -38,17 +34,16 @@ export default class PopupContainerView extends AbstractView {
     }
 
     this.topContainer = this.#element.querySelector('.film-details__top-container');
-
-    this.popupCloseButton = new PopupCloseButtonView();
-    renderElement(this.topContainer, this.popupCloseButton);
-
-    renderElement(this.topContainer, new PopupInfoContainerView(this.#film));
-
-    this.popupControls = new PopupControlsView(this.#film.userDetails, this.#changeFilmCardWatchList, this.#changeFilmCardWatched, this.#changeFilmCardFavorite);
-    renderElement(this.topContainer, this.popupControls);
-
     this.bottomContainer = this.#element.querySelector('.film-details__bottom-container');
-    renderElement(this.bottomContainer, new PopupCommentsContainerView(this.#film.comments));
+
+    this.popupControls = new PopupControlsView(
+      this.#film.userDetails, this.#updateFilmCard);
+
+    renderElement(this.topContainer, new PopupCloseButtonView());
+    renderElement(this.topContainer, new PopupInfoContainerView(this.#film));
+    renderElement(this.topContainer, this.popupControls);
+    renderElement(this.bottomContainer,
+      new PopupCommentsContainerView(this.#film.comments));
 
     return this.#element;
   }

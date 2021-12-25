@@ -1,38 +1,60 @@
 import SmartView from './smart-view.js';
-import { CommentsStringData } from '../mock/comments.js';
+import { COMMENTS_EMOTION } from '../const.js';
 
 const BLANK_COMMENT = {
-  text: 'Great movie!',
-  emoji: 'smile',
+  text: '',
+  emotion: 'smile',
 };
 
-const createPopupEmojiListTemplate = (emojiList, isChecked) => (
+const createPopupEmotionListTemplate = (emotionList, activeEmotion) => (
   `<div class="film-details__emoji-list">
-    ${emojiList.map((emoji) =>
-    `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${isChecked ? 'checked' : ''}>
-    <label class="film-details__emoji-label" for="emoji-${emoji}">
-      <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
-    </label>`).join(' ')}
+    ${emotionList.map((emotion) => (
+    `<input
+      class="film-details__emoji-item visually-hidden"
+      name="comment-emoji"
+      type="radio"
+      id="emoji-${emotion}"
+      value="${emotion}"
+      ${emotion === activeEmotion ? 'checked' : ''}
+    >
+    <label
+      class="film-details__emoji-label"
+      for="emoji-${emotion}"
+    >
+      <img
+        src="./images/emoji/${emotion}.png"
+        width="30"
+        height="30"
+        alt="emoji"
+      />
+    </label>`)).join('')}
   </div>`
 );
 
-const createPopupNewCommentTemplate = (newComment) => {
-  const popupEmojiListTemplate = createPopupEmojiListTemplate(CommentsStringData.COMMENTS_EMOTION, false);
+const createPopupNewCommentTemplate = ({emotion, text}) => {
+  const popupEmotionListTemplate = createPopupEmotionListTemplate(COMMENTS_EMOTION, emotion);
 
   return (
     `<div class="film-details__new-comment">
       <div class="film-details__add-emoji-label">
-        <img src="images/emoji/${newComment.emoji}.png" width="55" height="55" alt="emoji-${newComment.emoji}">
+        <img
+          src="images/emoji/${emotion}.png"
+          width="55"
+          height="55"
+          alt="emoji-${emotion}"
+        />
       </div>
       <label class="film-details__comment-label">
-        <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newComment.text}</textarea>
+        <textarea
+          class="film-details__comment-input"
+          placeholder="Select reaction below and write comment here" name="comment"
+        >${text}</textarea>
       </label>
-      ${popupEmojiListTemplate}
+      ${popupEmotionListTemplate}
     </div>`);
 };
 
 export default class PopupNewCommentView extends SmartView {
-  #element = null;
 
   constructor(newComment = BLANK_COMMENT) {
     super();
@@ -52,30 +74,25 @@ export default class PopupNewCommentView extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__comment-input')
-      .addEventListener('click', this.#textCommentInputHandler);
+      .addEventListener('input', this.#textCommentInputHandler);
 
-    const inputsEmoji = this.element.querySelectorAll('.film-details__emoji-item');
-    inputsEmoji.forEach((inputEmoji) =>
-      inputEmoji.addEventListener('click', this.#inputEmojiClickHandler));
+    const inputsEmotion = this.element.querySelectorAll('.film-details__emoji-item');
+    inputsEmotion.forEach((inputEmotion) => (
+      inputEmotion.addEventListener('click', this.#inputEmotionClickHandler))
+    );
   }
 
   #textCommentInputHandler = (evt) => {
     evt.preventDefault();
-    this.updateData({text: evt.target.value}, true);
-    PopupNewCommentView.parseDataToComment(this._data);
+    this._data = {...this._data, text: evt.target.value};
+    this.updateData(this._data, true);
   }
 
-  #inputEmojiClickHandler = (evt) => {
+  #inputEmotionClickHandler = (evt) => {
     evt.preventDefault();
-    this.updateData({emoji: evt.target.value});
-    PopupNewCommentView.parseDataToControls(this._data);
+    this._data = {...this._data, emotion: evt.target.value};
+    this.updateData(this._data);
   }
 
   static parseCommentToData = (newComment) => ({...newComment});
-
-  static parseDataToControls = (data) => {
-    const newComment = {...data};
-
-    return newComment;
-  };
 }

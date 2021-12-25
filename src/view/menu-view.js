@@ -1,7 +1,8 @@
 import AbstractView from './abstract-view.js';
 
 const createFilterItemTemplate = (name, count) => (
-  `<a href="#${name}" class="main-navigation__item">${name.charAt(0).toUpperCase() + name.slice(1)}
+  `<a href="#${name}" class="main-navigation__item">
+    ${name.charAt(0).toUpperCase() + name.slice(1)}
     <span class="main-navigation__item-count">${count}</span>
   </a>`
 );
