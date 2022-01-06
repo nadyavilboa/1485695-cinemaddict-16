@@ -70,6 +70,10 @@ export const getObjectKeyValue = (array, key, value) => {
 
 export const isEscapeEvent = (key) => key === 'Escape';
 
+export const isEnterEvent = (key) => key === 'Enter';
+
+export const isCtrlEvent = (key) => key === 'Ctrl';
+
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 

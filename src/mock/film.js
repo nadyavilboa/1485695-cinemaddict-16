@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomElements, getRandomDate } from './../utils/common.js';
 import { getUrlImage, generateCommentsFilm } from '../utils/film.js';
-import { comments } from './comments.js';
+import { comments } from './../main.js';
 
 const FilmsStringData = {
   FILMS_TITLES : ['Made for Each Other', 'Popeye the Sailor Meets Sinbad the Sailor', 'Sagebrush Trail', 'Santa Claus Conquers the Martians', 'The Dance of Life', 'The Great Flamarion', 'The Man with the Golden Arm'],

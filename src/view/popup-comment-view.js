@@ -27,12 +27,34 @@ const createPopupCommentTemplate = ({emotion, comment, author, date}) => (
 export default class PopupCommentView extends AbstractView {
   #comment = null;
 
-  constructor(comment) {
+  #addComment = null;
+  #deleteComment = null;
+
+  #updateCommentsContainer = null;
+
+  constructor(comment, addComment, deleteComment, updateCommentsContainer) {
     super();
     this.#comment = comment;
+
+    this.#addComment = addComment;
+    this.#deleteComment = deleteComment;
+
+    this.#updateCommentsContainer = updateCommentsContainer;
+
+    this.setDeleteHandler();
   }
 
   get template() {
     return createPopupCommentTemplate(this.#comment);
+  }
+
+  setDeleteHandler = () => {
+    this.element.querySelector('.film-details__comment-delete')
+      .addEventListener('click', this.#deleteHandler);
+  }
+
+  #deleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#updateCommentsContainer();
   }
 }
