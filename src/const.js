@@ -1,3 +1,5 @@
+export const AMOUNT_MINUTES_IN_HOUR = 60;
+
 export const SortType = {
   DEFAULT: 'default',
   TO_DATE: 'to-date',
@@ -24,6 +26,13 @@ export const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
-//выбран фильтр - перерисовка основного списка
-//изменены контролы - перерисовка трёх списков и фильтров
-//добавлен/удален коммент - перерисовка трёх списков
+//выбран фильтр - MINOR_BIG_LIST - перерисовка основного списка
+//изменены контролы - MAJOR - перерисовка трёх списков и фильтров
+//добавлен/удален коммент - MINOR_ALL_LISTS - перерисовка трёх списков
+
+export const MenuItem = {
+  STATS: 'stats',
+  ALL_MOVIES: 'allMovies',
+  WATCHLIST: 'watchlist',
+  FAVORITES: 'favorites',
+};

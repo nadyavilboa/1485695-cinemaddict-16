@@ -4,46 +4,29 @@ import { generateComment } from '../mock/comments.js';
 export default class CommentsModel extends AbstractObservable {
   #comments = [];
 
-  #newComment = {};
-
-  set comments(commetns) {
-    this.#comments = [...commetns];
+  set comments(comments) {
+    this.#comments = [...comments];
   }
 
   get comments() {
     return this.#comments;
   }
 
-  generateNewComment = (data) => {
-    const newComment = generateComment();
-
-    newComment.comment = data.text;
-    newComment.emotion = data.emotion;
-
-    return newComment;
-  }
+  //при вводе коммента получаем текст и эмоцию, нужно сгенерировать полный объект комментария
+  //иначе откуда возмутся данные об авторе, дате коммента и т.д.
 
   addComment = (updateType, data) => {
-    const newComment = this.generateNewComment(data);
-    this.#comments = [
-      newComment,
-      ...this.#comments,
-    ];
+    const newComment = generateComment(); //объект со всеми полями
+    newComment.comment = data.text; //заполняем данными от пользователя
+    newComment.emotion = data.emotion;
+
+    this.#comments = [newComment, ...this.#comments];
 
     this._notify(updateType, newComment);
   };
 
   deleteComment = (updateType, commentId) => {
-    const index = this.#comments.findIndex((comment) => comment.id === commentId);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisiting comment');
-    }
-
-    this.#comments = [
-      ...this.#comments.slice(0, index),
-      ...this.#comments.slice(index + 1),
-    ];
+    this.#comments = this.#comments.filter(({id}) => id !== commentId);
 
     this._notify(updateType);
   };

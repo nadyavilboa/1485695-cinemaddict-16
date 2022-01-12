@@ -60,6 +60,14 @@ export default class FilmsListPresenter {
     this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
+  destroy = () => {
+    this.#clearFilmsSection();
+
+    this.#filmsModel.removeObserver(this.#handleModelEvent);
+    this.#commentsModel.removeObserver(this.#handleModelEvent);
+    //remove filtersModelObserver
+  }
+
   #renderSort = () => {
     this.#sortMenuComponent = new SortView(this.#currentSortType);
     this.#sortMenuComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -138,7 +146,7 @@ export default class FilmsListPresenter {
   }
 
   #renderFilm = (filmsContainerElement, film, comments) => {
-    const filmPresenter = new FilmPresenter(filmsContainerElement, this.#handleViewAction, this.#handleModeChange);
+    const filmPresenter = new FilmPresenter(filmsContainerElement, this.#handleViewAction, this.#handleModeChange, this.#commentsModel);
     filmPresenter.init(film, comments);
     this.#filmPresenter.set(film.id, filmPresenter);
   }
@@ -147,34 +155,36 @@ export default class FilmsListPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, newComment = {}, updateFilm, commentId = '') => {
+  #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.CHANGE_CONTROLS:
-        this.#filmsModel.updateFilmControls(updateType, updateFilmControls);
+        this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this.#filmsModel.addCommentFilm(updateType, newComment, updateFilm);
-        this.#commentsModel.addComment(updateType, newComment);
+        this.#commentsModel.addComment(updateType, update);
         break;
       case UserAction.DELETE_COMMENT:
-        this.filmsModel.deleteCommentFilm(updateType, updateFilm, commentId);
-        this.#commentsModel.deleteComment(updateType, commentId);
+        this.#commentsModel.deleteComment(updateType, update);
         break;
       default:
         throw new Error(`Unknown userActionType type ${actionType}`);
     }
   }
 
+  //выбран фильтр - MINOR_BIG_LIST - перерисовка основного списка
+  //изменены контролы - MAJOR - перерисовка трёх списков и фильтров
+  //добавлен/удален коммент - MINOR_ALL_LISTS - перерисовка трёх списков
+
   #handleModelEvent = (updateType) => {
     switch (updateType) {
-      case UpdateType.ALL_LISTS:
+      case UpdateType.MINOR_ALL_LISTS:
         this.#renderSectionFilms();
         break;
-      case UpdateType.FILTERS_AND_LISTS:
+      case UpdateType.MAJOR:
         this.#renderSectionFilms();
         //ререндер меню фильтров
         break;
-      case UpdateType.BIG_LIST:
+      case UpdateType.MINOR_BIG_LIST:
         this.#buildContainer(FilmsTitle.FULL, false, this.films);
         break;
       default:

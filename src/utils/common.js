@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
-
-const AMOUNT_MINUTES_IN_HOUR = 60;
+import { AMOUNT_MINUTES_IN_HOUR } from '../const.js';
 
 export const getRandomInteger = (numberLeft, numberRight) => {
   if (numberLeft === numberRight) {
@@ -72,7 +71,7 @@ export const isEscapeEvent = (key) => key === 'Escape';
 
 export const isEnterEvent = (key) => key === 'Enter';
 
-export const isCtrlEvent = (key) => key === 'Ctrl';
+export const isControlEvent = (key) => key === 'Control';
 
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);

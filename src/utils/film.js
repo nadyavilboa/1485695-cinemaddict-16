@@ -52,7 +52,7 @@ export const getUrlImage = (folder, namesFiles) => {
 
 const isFilmInWatchList = (film) => Boolean(film.userDetails.watchList);
 
-const isFilmWatched = (film) => Boolean(film.userDetails.alreadyWatched);
+export const isFilmWatched = (film) => Boolean(film.userDetails.alreadyWatched);
 
 const isFilmFavorite = (film) => Boolean(film.userDetails.favorite);
 

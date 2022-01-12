@@ -1,9 +1,7 @@
 import { createElement, renderElement } from '../utils/render.js';
 import PopupCommentView from './popup-comment-view';
 import PopupNewCommentView from './popup-new-comment-view.js';
-import { getObjectKeyValue } from '../utils/common.js';
 
-import { comments } from './../main.js';
 import AbstractView from './abstract-view.js';
 
 const createPopupCommentsContainerTemplate = (commentsId) => (
@@ -17,23 +15,24 @@ const createPopupCommentsContainerTemplate = (commentsId) => (
 
 export default class PopupCommentsContainerView extends AbstractView {
   #element = null;
-  #commentsId = null;
+  #comments = null;
 
-  #addComment = null;
+  #formSubmit = null;
   #deleteComment = null;
 
-  constructor(commentsId, addComment, deleteComment) {
+  constructor(comments, formSubmit, deleteComment) {
     super();
-    this.#commentsId = commentsId;
+    this.#comments = comments;
 
-    this.#addComment = addComment;
+    this.#formSubmit = formSubmit;
     this.#deleteComment = deleteComment;
+
   }
 
   #renderCommentList = () => {
     this.commentsList = this.#element.querySelector('.film-details__comments-list');
-    this.#commentsId.forEach((commentId) => renderElement(this.commentsList,
-      new PopupCommentView(getObjectKeyValue(comments, 'id', commentId), this.#updateCommentsContainer)));
+    this.#comments.forEach((comment) => renderElement(this.commentsList,
+      new PopupCommentView(comment, this.#deleteComment)));
   }
 
   get element() {
@@ -49,12 +48,7 @@ export default class PopupCommentsContainerView extends AbstractView {
   }
 
   get template() {
-    return createPopupCommentsContainerTemplate(this.#commentsId);
-  }
-
-  #updateCommentsContainer = () => {
-    this.#deleteComment();
-    this.#renderCommentList();
+    return createPopupCommentsContainerTemplate(this.#comments);
   }
 
 }

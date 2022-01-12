@@ -2,7 +2,8 @@ import PopupContainerView from '../view/popup-container-view.js';
 import FilmView from '../view/film-view.js';
 import { renderElement, removeComponent, replace } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
-import { isEscapeEvent } from '../utils/common.js';
+import { isEscapeEvent, isEnterEvent, isControlEvent, getObjectKeyValue } from '../utils/common.js';
+import { comments } from '../main.js';
 
 const PopupMode = {
   POPUP_CLOSE: 'CLOSE',
@@ -13,20 +14,23 @@ export default class FilmPresenter {
   #filmsListContainer = null;
   #filmComponent = null;
   #film = null;
+  #comments = null;
+  #commentsModel = null;
 
   #popupMode = PopupMode.POPUP_CLOSE;
 
   #changeData = null;
   #changeMode = null;
 
-  #keyArray = [];
-
   #popupContainerComponent = null;
 
-  constructor (filmsListContainer, changeData, changeMode) {
+  #keyArray = []; //нужен для закоментированной функции
+
+  constructor (filmsListContainer, changeData, changeMode, commentsModel) {
     this.#filmsListContainer = filmsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#commentsModel = commentsModel;
   }
 
   init = (film) => {
@@ -52,16 +56,31 @@ export default class FilmPresenter {
 
   destroy = () => {
     removeComponent(this.#filmComponent);
+
+    this.#filmsListContainer = null;
+    this.#film = null;
+    this.#comments = null;
+
+    this.#popupMode = PopupMode.POPUP_CLOSE;
+
+    this.#changeData = null;
+    this.#changeMode = null;
+
+    this.#popupContainerComponent = null;
   }
 
-  #renderPopup = (film, updateFilmCard, submitFormHandler, deleteComment) => {
+  #renderPopup = (film, changePopupControls, formSubmit, deleteComment) => {
     this.#popupMode = PopupMode.POPUP_OPEN;
     this.#changeMode();
+    this.#comments = this.#getFilmComments(film.comments);
+
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
-    this.#runOnKeys('Control', 'Enter');
 
-    this.#popupContainerComponent = new PopupContainerView(film, updateFilmCard, submitFormHandler, deleteComment);
+    //this.#runOnKeys(); //запуск закомментированной функции
+    document.addEventListener('keydown', this.#onFormSubmitKeyDownHandler);
+
+    this.#popupContainerComponent = new PopupContainerView(film, changePopupControls, this.#comments, formSubmit, deleteComment);
     renderElement(document.body, this.#popupContainerComponent);
 
     this.#popupContainerComponent.setCloseClickHandler(this.#closePopup);
@@ -91,10 +110,25 @@ export default class FilmPresenter {
       UserAction.ADD_COMMENT,
       UpdateType.ALL_LISTS,
       {...this.#film, comments: {...newComment.id }});
-    this.#closePopup();
   }
 
-  #runOnKeys = (...keys) => {
+  #getFilmComments = (commentsIds) => {
+    const filmComments = [];
+
+    commentsIds.forEach((commentId) => {
+      let filmComment = null;
+      filmComment = getObjectKeyValue(this.#commentsModel.comments, 'id', commentId);
+
+      if(filmComment) {
+        filmComments.push(filmComment);
+      }
+    });
+
+    return filmComments;
+  }
+
+  //runOnKeys проверяет, что клавиши были нажаты одновременно, запускает отправку данных
+  /*#runOnKeys = (...keys) => {
     document.addEventListener('keydown', (evt) => {
       if (evt.repeat) {
         return;
@@ -123,21 +157,34 @@ export default class FilmPresenter {
       this.#keyArray = [];
     });
 
+  }*/
+
+  #onFormSubmitKeyDownHandler = ({key}) => {
+    if (isControlEvent(key)) {
+      document.addEventListener('keydown', ({secondKey}) => {
+        if (isEnterEvent(secondKey)) {
+          this.#changeData(
+            UserAction.ADD_COMMENT,
+            UpdateType.MINOR_ALL_LISTS,
+            {...this.#film, comments: {...newComment }});
+        }
+      });
+    }
   }
 
   #changeFilmCardControls = (newDetailsData) => {
     this.#changeData(
       UserAction.CHANGE_CONTROLS,
-      UpdateType.FILTERS_AND_LIST,
+      UpdateType.MAJOR,
       {...this.#film, userDetails: {...newDetailsData }});
   }
 
   #deleteCommentFilmCard = (commentId) => {
     const index = this.#film.comments.findIndex((el) => el === commentId);
 
-    this.changeData(
+    this.#changeData(
       UserAction.DELETE_COMMENT,
-      UpdateType.ALL_LISTS,
+      UpdateType.MINOR_ALL_LISTS,
       {...this.#film, comments:
         {...this.#film.comments.slice(0, index),
           ...this.#film.comments.slice(index+1),}

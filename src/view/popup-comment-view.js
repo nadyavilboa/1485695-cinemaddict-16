@@ -27,20 +27,13 @@ const createPopupCommentTemplate = ({emotion, comment, author, date}) => (
 export default class PopupCommentView extends AbstractView {
   #comment = null;
 
-  #addComment = null;
   #deleteComment = null;
 
-  #updateCommentsContainer = null;
-
-  constructor(comment, addComment, deleteComment, updateCommentsContainer) {
+  constructor(comment, deleteComment) {
     super();
     this.#comment = comment;
 
-    this.#addComment = addComment;
     this.#deleteComment = deleteComment;
-
-    this.#updateCommentsContainer = updateCommentsContainer;
-
     this.setDeleteHandler();
   }
 
@@ -55,6 +48,6 @@ export default class PopupCommentView extends AbstractView {
 
   #deleteHandler = (evt) => {
     evt.preventDefault();
-    this.#updateCommentsContainer();
+    this.#deleteComment(this.#comment.id);
   }
 }

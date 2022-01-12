@@ -1,7 +1,7 @@
 import AbstractView from './abstract-view.js';
 
 const createFilterItemTemplate = (name, count) => (
-  `<a href="#${name}" class="main-navigation__item">
+  `<a href="#${name}" class="main-navigation__item" data-menu-item="${name}">
     ${name.charAt(0).toUpperCase() + name.slice(1)}
     <span class="main-navigation__item-count">${count}</span>
   </a>`
@@ -12,7 +12,7 @@ const createMenuTemplate = (filters) => {
 
   return (
     `<div class="main-navigation__items">
-      <a href="#allMovies" class="main-navigation__item main-navigation__item--active">All movies</a>
+      <a href="#allMovies" class="main-navigation__item main-navigation__item--active" data-menu-item="allMovies">All movies</a>
       ${filtersMarkup}
     </div>`
   );
