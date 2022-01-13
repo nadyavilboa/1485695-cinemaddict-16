@@ -34,5 +34,6 @@ export const MenuItem = {
   STATS: 'stats',
   ALL_MOVIES: 'allMovies',
   WATCHLIST: 'watchlist',
+  HISTORY: 'history',
   FAVORITES: 'favorites',
 };

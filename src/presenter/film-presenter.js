@@ -77,7 +77,7 @@ export default class FilmPresenter {
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
 
-    //this.#runOnKeys(); //запуск закомментированной функции
+    //this.#runOnKeys(); //альтернатива по одновременному нажатию клавиш
     document.addEventListener('keydown', this.#onFormSubmitKeyDownHandler);
 
     this.#popupContainerComponent = new PopupContainerView(film, changePopupControls, this.#comments, formSubmit, deleteComment);

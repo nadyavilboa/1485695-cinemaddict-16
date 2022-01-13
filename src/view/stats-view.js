@@ -142,7 +142,7 @@ export default class StatisticsView extends SmartView {
   #setInnerHandlers = () => {
     const inputsPeriod = this.element.querySelectorAll('.statistic__filters-input');
     inputsPeriod.forEach((inputPeriod) => (
-      inputPeriod.addEventListener('click', this.#inputPeriodClickHandler))
+      inputPeriod.addEventListener('change', this.#inputPeriodClickHandler))
     );
   }
 

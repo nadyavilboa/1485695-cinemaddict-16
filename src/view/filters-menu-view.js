@@ -12,7 +12,6 @@ const createMenuTemplate = (filters) => {
 
   return (
     `<div class="main-navigation__items">
-      <a href="#allMovies" class="main-navigation__item main-navigation__item--active" data-menu-item="allMovies">All movies</a>
       ${filtersMarkup}
     </div>`
   );
