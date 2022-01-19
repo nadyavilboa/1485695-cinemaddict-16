@@ -1,19 +1,35 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { countHour, countMinutes, getTextStatistics } from '../utils/statistics.js';
+import dayjs from 'dayjs';
+import {
+  countHour,
+  countMinutes,
+  getTextStatistics,
+  colorToHex,
+  getStatisticsGenres,
+  isDateRange,
+  getEmptyStatistics,
+} from '../utils/statistics.js';
 import SmartView from './smart-view';
+import { StatisticsPeriods, Color, TimeValues } from '../const.js';
 
-const renderColorsChart = (statisticCtx) => {
+const BAR_HEIGHT = 50;
 
-  const myChart = new Chart(statisticCtx, {
+const renderFilmsChart = (statisticCtx, films) => {
+  const statisticsGenres = getStatisticsGenres(films);
+  const genresTitles = Object.keys(statisticsGenres);
+  const genresAmount = Object.values(statisticsGenres);
+
+  statisticCtx.height = BAR_HEIGHT * genresTitles.length;
+  return new Chart(statisticCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['Sci-Fi', 'Animation', 'Fantasy', 'Comedy', 'TV Series'],
+      labels: genresTitles,
       datasets: [{
-        data: [11, 8, 7, 4, 3],
-        backgroundColor: '#ffe800',
-        hoverBackgroundColor: '#ffe800',
+        data: genresAmount,
+        backgroundColor: colorToHex[Color.YELLOW],
+        hoverBackgroundColor: colorToHex[Color.YELLOW],
         anchor: 'start',
         barThickness: 24,
       }],
@@ -25,7 +41,7 @@ const renderColorsChart = (statisticCtx) => {
           font: {
             size: 20,
           },
-          color: '#ffffff',
+          color: colorToHex[Color.WHITE],
           anchor: 'start',
           align: 'start',
           offset: 40,
@@ -34,7 +50,7 @@ const renderColorsChart = (statisticCtx) => {
       scales: {
         yAxes: [{
           ticks: {
-            fontColor: '#ffffff',
+            fontColor: colorToHex[Color.WHITE],
             padding: 100,
             fontSize: 20,
           },
@@ -62,35 +78,35 @@ const renderColorsChart = (statisticCtx) => {
       },
     },
   });
-  return myChart;
 };
 
-const createStatisticsTemplate = (films) => {
-  const textStatistics = getTextStatistics(films);
+const createStatisticsTemplate = (films, userRank, currentPeriod) => {
+  const textStatistics = films.length ? getTextStatistics(films) : getEmptyStatistics();
   return `<section class="statistic">
     <p class="statistic__rank">
       Your rank
       <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-      <span class="statistic__rank-label">${textStatistics.userRank}</span>
+      <span class="statistic__rank-label">${userRank}</span>
     </p>
 
     <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
       <p class="statistic__filters-description">Show stats:</p>
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
-      <label for="statistic-all-time" class="statistic__filters-label">All time</label>
+      ${StatisticsPeriods.map((period) => `
+      <input
+        type="radio"
+        class="statistic__filters-input visually-hidden"
+        name="statistic-filter"
+        id="statistic-${period.value}"
+        value="${period.value}"
+        ${period.value === currentPeriod ? 'checked': ''}>
+      <label
+        for="statistic-${period.value}"
+        class="statistic__filters-label">
+          ${period.text}
+      </label>`)
+    .join(' ')}
 
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
-      <label for="statistic-today" class="statistic__filters-label">Today</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
-      <label for="statistic-week" class="statistic__filters-label">Week</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
-      <label for="statistic-month" class="statistic__filters-label">Month</label>
-
-      <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
-      <label for="statistic-year" class="statistic__filters-label">Year</label>
     </form>
 
     <ul class="statistic__text-list">
@@ -100,7 +116,7 @@ const createStatisticsTemplate = (films) => {
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">${countHour(textStatistics.timeFilms) ? countHour(textStatistics.timeFilms) : ''} <span class="statistic__item-description">h</span> ${countMinutes(textStatistics.timeFilms) ? countMinutes(textStatistics.timeFilms) : ''} <span class="statistic__item-description">m</span></p>
+        <p class="statistic__item-text">${countHour(textStatistics.timeFilms)} <span class="statistic__item-description">h</span> ${countMinutes(textStatistics.timeFilms)} <span class="statistic__item-description">m</span></p>
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
@@ -116,28 +132,54 @@ const createStatisticsTemplate = (films) => {
 };
 
 export default class StatisticsView extends SmartView {
-  #statisticsChart = null;
-  #colorsChart = null;
+  #filmsChart = null;
 
-  #films = null;
+  #userRank = null;
+  #currentPeriod = null;
 
-  constructor (films) {
+  constructor (films, userRank, currentPeriod) {
     super();
 
-    this.#films = films;
+    this._data = {
+      films,
+      dateFrom: dayjs().subtract(TimeValues.AMOUNT_YEARS_PROGRAM, 'year').toDate(),
+      dateTo: dayjs().toDate(),
+    };
 
+    this.#userRank = userRank;
+    this.#currentPeriod = currentPeriod;
+  }
+
+  get template() {
+    const filmsInCurrentPeriod = this.#filterFilmsDateRange();
+    return createStatisticsTemplate(filmsInCurrentPeriod, this.#userRank, this.#currentPeriod);
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#filmsChart) {
+      this.#filmsChart.destroy();
+      this.#filmsChart = null;
+    }
+  }
+
+  render = () => {
     this.#setChart();
     this.#setInnerHandlers();
   }
 
-  get template() {
-    return createStatisticsTemplate(this.#films);
-  }
-
   restoreHandlers = () => {
     this.#setChart();
-    //this.#setInnerHandlers();
+    this.#setInnerHandlers();
   }
+
+  #filterFilmsDateRange = () => {
+    const {films, dateFrom, dateTo} = this._data;
+    const period = dayjs(dateTo).diff(dayjs(dateFrom), 'day', true);
+    const resultArray = films.filter((film) => isDateRange(film, period));
+    return resultArray;
+  };
 
   #setInnerHandlers = () => {
     const inputsPeriod = this.element.querySelectorAll('.statistic__filters-input');
@@ -146,20 +188,36 @@ export default class StatisticsView extends SmartView {
     );
   }
 
-  #setChart = () => {
-    //эта часть не работает, код черновой, пока задача, чтобы график запустился
-    const BAR_HEIGHT = 50 * 9;
-    const statisticCtx = document.querySelector('.statistic__chart');
-
-    //statisticCtx.setAttribute('height', BAR_HEIGHT);
-
-    //this.#colorsChart = renderColorsChart(statisticCtx);
-
-  }
-
   #inputPeriodClickHandler = (evt) => {
     evt.preventDefault();
-    console.log(evt.target);
+    this.#currentPeriod = evt.target.value;
+    let newDateFrom = null;
+    switch (this.#currentPeriod) {
+      case 'all-time':
+        newDateFrom = dayjs().subtract(TimeValues.AMOUNT_YEARS_PROGRAM, 'year').toDate();
+        break;
+      case 'today':
+        newDateFrom = dayjs().toDate();
+        break;
+      case 'week':
+        newDateFrom = dayjs().subtract(TimeValues.AMOUNT_DAYS_IN_WEEK, 'day').toDate();
+        break;
+      case 'month':
+        newDateFrom = dayjs().subtract(TimeValues.AMOUNT_DAYS_IN_MONTH, 'day').toDate();
+        break;
+      case 'year':
+        newDateFrom = dayjs().subtract(TimeValues.AMOUNT_DAYS_IN_YEAR, 'day').toDate();
+        break;
+      default:
+        throw new Error(`Unknown period type ${this.#currentPeriod}`);
+    }
+    this.updateData({...this._data, dateFrom: newDateFrom});
+  }
+
+  #setChart = () => {
+    const statisticCtx = document.querySelector('.statistic__chart');
+    const filmsInCurrentPeriod = this.#filterFilmsDateRange();
+    this.#filmsChart = renderFilmsChart(statisticCtx, filmsInCurrentPeriod);
   }
 }
 

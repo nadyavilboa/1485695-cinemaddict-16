@@ -1,5 +1,11 @@
 import { getActualRank, isFilmWatched } from './film.js';
-import { AMOUNT_MINUTES_IN_HOUR } from '../const.js';
+import { TimeValues, Color } from '../const.js';
+import dayjs from 'dayjs';
+
+export const getWatchedFilms = (films) => {
+  const watchedFilms = films.filter((film) => isFilmWatched(film));
+  return watchedFilms;
+};
 
 const countTimeFilms = (films) => {
   let time = 0;
@@ -12,7 +18,7 @@ const countGenresFilm = (accumulate, item) => {
   return { ...accumulate, [item]: newCount };
 };
 
-const getTopGenre = (films) => {
+export const getStatisticsGenres = (films) => {
   let genresArray = [];
 
   films.forEach((film) => {
@@ -22,33 +28,39 @@ const getTopGenre = (films) => {
   const countGenres = genresArray.reduce((accumulate, item) =>
     countGenresFilm(accumulate, item), {});
 
+  return countGenres;
+};
+
+const getTopGenre = (films) => {
+  const countGenres = getStatisticsGenres(films);
+
   const maxCount = Math.max.apply(null, Object.values(countGenres));
   const [recordItem] = Object.entries(countGenres).find(([, val]) => val === maxCount);
 
   return recordItem;
 };
 
-export const countHour = (timeValueInteger) => {
-  const hours = Math.floor(timeValueInteger / AMOUNT_MINUTES_IN_HOUR);
-  if (hours !== 0) {
-    return hours;
-  }
-};
+export const countHour = (timeValueInteger) => Math.floor(timeValueInteger / TimeValues.AMOUNT_MINUTES_IN_HOUR);
 
-export const countMinutes = (timeValueInteger) => {
-  const minutes = timeValueInteger % AMOUNT_MINUTES_IN_HOUR;
-  if (minutes !== 0) {
-    return minutes;
-  }
-};
+export const countMinutes = (timeValueInteger) => timeValueInteger % TimeValues.AMOUNT_MINUTES_IN_HOUR;
 
-export const getTextStatistics = (films) => {
-  const watchedFilms = films.filter((film) => isFilmWatched(film));
-  const textStatistics = {
-    userRank: getActualRank(watchedFilms.length),
-    countWatched: watchedFilms.length,
-    timeFilms: countTimeFilms(watchedFilms),
-    topGenre: getTopGenre(watchedFilms),
-  };
-  return textStatistics;
+export const getEmptyStatistics = () => ({
+  countWatched: 0,
+  timeFilms: 0,
+  topGenre: '',
+});
+
+export const getTextStatistics = (films) =>
+  ({
+    countWatched: films.length,
+    timeFilms: countTimeFilms(films),
+    topGenre: getTopGenre(films),
+  });
+
+export const isDateRange = (film, period) =>
+  dayjs(film.userDetails.watchingDate).isAfter(dayjs().subtract(period, 'days'));
+
+export const colorToHex = {
+  [Color.YELLOW]: '#ffe800',
+  [Color.WHITE]: '#ffffff',
 };

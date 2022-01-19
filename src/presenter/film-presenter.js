@@ -3,7 +3,6 @@ import FilmView from '../view/film-view.js';
 import { renderElement, removeComponent, replace } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
 import { isEscapeEvent, isEnterEvent, isControlEvent, getObjectKeyValue } from '../utils/common.js';
-import { comments } from '../main.js';
 
 const PopupMode = {
   POPUP_CLOSE: 'CLOSE',
@@ -77,8 +76,7 @@ export default class FilmPresenter {
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
 
-    //this.#runOnKeys(); //альтернатива по одновременному нажатию клавиш
-    document.addEventListener('keydown', this.#onFormSubmitKeyDownHandler);
+    this.#runOnKeys();
 
     this.#popupContainerComponent = new PopupContainerView(film, changePopupControls, this.#comments, formSubmit, deleteComment);
     renderElement(document.body, this.#popupContainerComponent);
@@ -127,8 +125,7 @@ export default class FilmPresenter {
     return filmComments;
   }
 
-  //runOnKeys проверяет, что клавиши были нажаты одновременно, запускает отправку данных
-  /*#runOnKeys = (...keys) => {
+  #runOnKeys = (...keys) => {
     document.addEventListener('keydown', (evt) => {
       if (evt.repeat) {
         return;
@@ -157,19 +154,6 @@ export default class FilmPresenter {
       this.#keyArray = [];
     });
 
-  }*/
-
-  #onFormSubmitKeyDownHandler = ({key}) => {
-    if (isControlEvent(key)) {
-      document.addEventListener('keydown', ({secondKey}) => {
-        if (isEnterEvent(secondKey)) {
-          this.#changeData(
-            UserAction.ADD_COMMENT,
-            UpdateType.MINOR_ALL_LISTS,
-            {...this.#film, comments: {...newComment }});
-        }
-      });
-    }
   }
 
   #changeFilmCardControls = (newDetailsData) => {

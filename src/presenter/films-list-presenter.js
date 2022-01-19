@@ -1,29 +1,17 @@
 import FilmSectionView from '../view/film-section-view.js';
 import FilmsContainerView from '../view/films-container-view.js';
 import FilmsListContainerView from '../view/films-list-container-view.js';
-import MenuContainerView from '../view/menu-container-view.js';
-import MenuView from '../view/filters-menu-view.js';
-import MenuStatsView from '../view/menu-stats-view.js';
 import SortView from '../view/sort-view.js';
 import ButtonShowMoreView from '../view/button-show-more-view.js';
-import StatisticsView from '../view/stats-view.js';
 import FilmPresenter from './film-presenter.js';
-import FilterPresenter from './filter-presenter.js';
 import { sortByAmountComments, sortByDate, sortByRating } from '../utils/common.js';
 import { filterFilms } from '../utils/film.js';
-import { SortType, UpdateType, UserAction, MenuItem } from '../const.js';
+import { FilmsTitle, SortType, UpdateType, UserAction } from '../const.js';
 import { renderElement, removeComponent } from '../utils/render.js';
 import { countFilters } from '../main.js';
 
 const FILMS_AMOUNT_PER_STEP = 5;
 const FILMS_EXTRA_AMOUNT = 2;
-
-const FilmsTitle = {
-  EMPTY: 'There are no movies in our database',
-  FULL: 'All movies. Upcoming',
-  TOP_RATED: 'Top rated',
-  MOST_COMMENTED: 'Most commented',
-};
 
 export default class FilmsListPresenter {
   #siteMainElement = null;
@@ -32,13 +20,7 @@ export default class FilmsListPresenter {
   #commentsModel = null;
   #filterModel = null;
 
-  #statisticsComponent = null;
-
   #sortMenuComponent = null;
-
-  #menuContainerComponent = new MenuContainerView();
-  #filtersMenuComponent = new MenuView(countFilters);
-  #menuStatsComponent = new MenuStatsView();
 
   #buttonShowMoreComponent = new ButtonShowMoreView();
   #filmsSectionComponent = new FilmSectionView();
@@ -67,11 +49,11 @@ export default class FilmsListPresenter {
 
     switch (this.#currentSortType) {
       case SortType.TO_DATE:
-        return filteredFilms.sort(sortByDate);
+        return films.sort(sortByDate);
       case SortType.TO_RATING:
-        return filteredFilms.sort(sortByRating);
+        return films.sort(sortByRating);
       default:
-        return filteredFilms;
+        return films;
     }
   }
 
@@ -80,13 +62,6 @@ export default class FilmsListPresenter {
   }
 
   init = () => {
-    this.#filterPresenter = new FilterPresenter(this.#siteMainElement, this.#filmsModel, this.#filterModel);
-
-    renderElement(this.#siteMainElement, this.#menuContainerComponent);
-    renderElement(this.#menuContainerComponent, this.#filtersMenuComponent);
-    renderElement(this.#menuContainerComponent, this.#menuStatsComponent);
-
-    this.#menuContainerComponent.setMenuClickHandler(this.#handleMenuClick);
 
     this.#renderSectionFilms();
 
@@ -96,7 +71,6 @@ export default class FilmsListPresenter {
   }
 
   destroy = () => {
-    removeComponent(this.#menuContainerComponent);
     this.#clearFilmsSection();
 
     this.#filmsModel.removeObserver(this.#handleModelEvent);
@@ -104,52 +78,17 @@ export default class FilmsListPresenter {
     this.#filterModel.removeObserver(this.#handleModelEvent);
   }
 
-  #handleMenuClick = (menuItem) => {
-    if (menuItem === MenuItem.STATS) {
-      this.destroy();
-      FilterPresenter.destroy();
-
-      this.#statisticsComponent = new StatisticsView(this.#filmsModel.films);
-      renderElement(this.#siteMainElement, this.#statisticsComponent);
-      return;
-    }
-
-    removeComponent(this.#statisticsComponent);
-    this.destroy();
-    this.init();
-
-    this.#filterPresenter.destroy();
-    this.#filterPresenter.init();
-
-    let filteredFilms = [];
-
-    switch (menuItem) {
-      case MenuItem.ALL_MOVIES:
-        filteredFilms = filterFilms(this.films, MenuItem.ALL_MOVIES);
-        break;
-      case MenuItem.WATCHLIST:
-        filteredFilms = filterFilms(this.films, MenuItem.WATCHLIST);
-        break;
-      case MenuItem.WATCHED:
-        filteredFilms = filterFilms(this.films, MenuItem.WATCHED);
-        break;
-      case MenuItem.FAVORITES:
-        filteredFilms = filterFilms(this.films, MenuItem.FAVORITES);
-        break;
-      default:
-        throw new Error(`Unknown menuItem type ${menuItem}`);
-    }
-    this.#buildContainer(FilmsTitle.FULL, false, filteredFilms);
-  }
-
   #renderSort = () => {
     this.#sortMenuComponent = new SortView(this.#currentSortType);
     this.#sortMenuComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
-    renderElement(this.#siteMainElement, this.#sortMenuComponent);
+
+    if (this.#sortMenuComponent === null) {
+      renderElement(this.#siteMainElement, this.#sortMenuComponent);
+    }
   }
 
   #renderSectionFilms = () => {
-    const films = this.#filmsModel.films;
+    const films = this.films;
     const filmsCount = films.length;
 
     if (filmsCount === 0) {
@@ -160,12 +99,12 @@ export default class FilmsListPresenter {
     this.#renderSort();
     renderElement(this.#siteMainElement, this.#filmsSectionComponent);
 
-    this.#buildContainer(FilmsTitle.FULL, false, films);
-    this.#buildContainer(FilmsTitle.TOP_RATED, true, films.sort(sortByRating));
-    this.#buildContainer(FilmsTitle.MOST_COMMENTED, true, films.sort(sortByAmountComments));
+    this.buildContainer(FilmsTitle.FULL, false, films);
+    this.buildContainer(FilmsTitle.TOP_RATED, true, films.sort(sortByRating));
+    this.buildContainer(FilmsTitle.MOST_COMMENTED, true, films.sort(sortByAmountComments));
   }
 
-  #buildContainer = (title, isExtra, filmsToRender) => {
+  buildContainer = (title, isExtra, filmsToRender) => {
     renderElement(this.#filmsSectionComponent, new FilmsContainerView(title, isExtra));
     const filmsListElement = this.#filmsSectionComponent.element.querySelector('.films-list:last-child');
     renderElement(filmsListElement, new FilmsListContainerView());
@@ -174,7 +113,7 @@ export default class FilmsListPresenter {
       this.#renderListFilms(filmsListElement, filmsToRender.slice(0, FILMS_EXTRA_AMOUNT));
     } else {
       this.#renderListFilms(filmsListElement, filmsToRender.slice(0,
-        Math.min(this.#filmsModel.films.length, FILMS_AMOUNT_PER_STEP)));
+        Math.min(this.films.length, FILMS_AMOUNT_PER_STEP)));
 
       this.#renderButtonShowMore(filmsListElement, filmsToRender);
     }
@@ -256,11 +195,11 @@ export default class FilmsListPresenter {
         break;
       case UpdateType.MAJOR:
         this.#renderSectionFilms();
-        this.#filterPresenter.destroy();
-        this.#filterPresenter.init();
+        //this.#filterPresenter.destroy();
+        //this.#filterPresenter.init();
         break;
       case UpdateType.MINOR_BIG_LIST:
-        this.#buildContainer(FilmsTitle.FULL, false, this.films);
+        this.buildContainer(FilmsTitle.FULL, false, this.films);
         break;
       default:
         throw new Error(`Unknown updateType type ${updateType}`);

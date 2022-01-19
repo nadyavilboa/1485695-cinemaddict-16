@@ -1,4 +1,17 @@
-export const AMOUNT_MINUTES_IN_HOUR = 60;
+export const TimeValues = {
+  AMOUNT_MINUTES_IN_HOUR: 60,
+  AMOUNT_DAYS_IN_WEEK: 7,
+  AMOUNT_DAYS_IN_MONTH: 30,
+  AMOUNT_DAYS_IN_YEAR: 360,
+  AMOUNT_YEARS_PROGRAM: 30,
+};
+
+export const FilmsTitle = {
+  EMPTY: 'There are no movies in our database',
+  FULL: 'All movies. Upcoming',
+  TOP_RATED: 'Top rated',
+  MOST_COMMENTED: 'Most commented',
+};
 
 export const SortType = {
   DEFAULT: 'default',
@@ -36,4 +49,32 @@ export const MenuItem = {
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites',
+};
+
+export const StatisticsPeriods = [
+  {
+    value: 'all-time',
+    text: 'All time',
+  },
+  {
+    value: 'today',
+    text: 'Today',
+  },
+  {
+    value: 'week',
+    text: 'Week',
+  },
+  {
+    value: 'month',
+    text: 'Month',
+  },
+  {
+    value: 'year',
+    text: 'Year',
+  },
+];
+
+export const Color = {
+  YELLOW: 'yellow',
+  WHITE: 'white',
 };

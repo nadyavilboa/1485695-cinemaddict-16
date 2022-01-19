@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { AMOUNT_MINUTES_IN_HOUR } from '../const.js';
+import { TimeValues } from '../const.js';
 
 export const getRandomInteger = (numberLeft, numberRight) => {
   if (numberLeft === numberRight) {
@@ -42,14 +42,14 @@ export const getRandomDate = (maxDateGap, dateType) => {
 };
 
 export const countHourInDuration = (valueInteger) => {
-  const countHour = Math.floor(valueInteger / AMOUNT_MINUTES_IN_HOUR);
+  const countHour = Math.floor(valueInteger / TimeValues.AMOUNT_MINUTES_IN_HOUR);
   if (countHour !== 0) {
     return `${String(countHour)  }h`;
   }
 };
 
 export const countMinutesInDuration = (valueInteger) => {
-  const countMinutes = valueInteger % AMOUNT_MINUTES_IN_HOUR;
+  const countMinutes = valueInteger % TimeValues.AMOUNT_MINUTES_IN_HOUR;
   if (countMinutes !== 0) {
     return `${String(countMinutes)  }m`;
   }

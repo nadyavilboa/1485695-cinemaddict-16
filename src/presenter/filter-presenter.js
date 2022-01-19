@@ -11,7 +11,7 @@ export default class FilterPresenter {
 
   #filtersMenuComponent = null;
 
-  constructor(menuContainer, filmsModel, filterModel,) {
+  constructor(menuContainer, filmsModel, filterModel) {
     this.#menuContainer = menuContainer;
     this.#filterModel = filterModel;
     this.#filmsModel = filmsModel;
@@ -47,8 +47,8 @@ export default class FilterPresenter {
   init = () => {
     const prevFiltersMenuComponent = this.#filtersMenuComponent;
 
-    this.#filtersMenuComponent = new FiltersMenuView(countFilters, this.#filterModel.filter);
-    this.#menuContainer.setMenuClickHandler(this.#handleFilterTypeChange);
+    this.#filtersMenuComponent = new FiltersMenuView(countFilters);
+    this.#filtersMenuComponent.setFilterClickHandler(this.#handleFilterTypeChange);
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);

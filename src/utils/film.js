@@ -82,20 +82,22 @@ export const countFiltersValue = (films) => {
 };
 
 export const filterFilms = (films, filter) => {
+  console.log('start filter');
+  console.log(filter);
   const filteredFilms = [];
 
   switch (filter) {
     case 'allMovies':
       films.forEach((film) => filteredFilms.push(film));
       break;
-    case 'watchList':
+    case 'watchlist':
       films.forEach((film) => {
         if (isFilmInWatchList(film)) {
           filteredFilms.push(film);
         }
       });
       break;
-    case 'watched':
+    case 'history':
       films.forEach((film) => {
         if (isFilmWatched(film)) {
           filteredFilms.push(film);
@@ -112,4 +114,6 @@ export const filterFilms = (films, filter) => {
     default:
       throw new Error(`Unknown filter type ${filter}`);
   }
+  console.log(films);
+  return films;
 };

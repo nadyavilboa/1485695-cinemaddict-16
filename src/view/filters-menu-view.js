@@ -28,4 +28,18 @@ export default class MenuView extends AbstractView {
   get template() {
     return createMenuTemplate(this.#filters);
   }
+
+  setFilterClickHandler = (callback) => {
+    this._callback.filterClick = callback;
+    this.element.addEventListener('click', this.#filterClickHandler);
+  }
+
+  #filterClickHandler = (evt) => {
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
+
+    evt.preventDefault();
+    this._callback.filterClick(evt.target.dataset.menuItem);
+  }
 }
