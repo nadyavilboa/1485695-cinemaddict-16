@@ -1,7 +1,8 @@
 import PopupContainerView from '../view/popup-container-view.js';
 import FilmView from '../view/film-view.js';
 import { renderElement, removeComponent, replace } from '../utils/render.js';
-import { isEscapeEvent } from '../utils/common.js';
+import { UserAction, UpdateType } from '../const.js';
+import { isEscapeEvent, isEnterEvent, isControlEvent, getObjectKeyValue } from '../utils/common.js';
 
 const PopupMode = {
   POPUP_CLOSE: 'CLOSE',
@@ -12,6 +13,8 @@ export default class FilmPresenter {
   #filmsListContainer = null;
   #filmComponent = null;
   #film = null;
+  #comments = null;
+  #commentsModel = null;
 
   #popupMode = PopupMode.POPUP_CLOSE;
 
@@ -20,10 +23,13 @@ export default class FilmPresenter {
 
   #popupContainerComponent = null;
 
-  constructor (filmsListContainer, changeData, changeMode) {
+  #keyArray = []; //нужен для закоментированной функции
+
+  constructor (filmsListContainer, changeData, changeMode, commentsModel) {
     this.#filmsListContainer = filmsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#commentsModel = commentsModel;
   }
 
   init = (film) => {
@@ -33,10 +39,10 @@ export default class FilmPresenter {
 
     this.#filmComponent = new FilmView(film);
     this.#filmComponent.setFilmCardClickHandler(() => {
-      this.#renderPopup(film, this.#changeFilmCard);
+      this.#renderPopup(film, this.#changeFilmCardControls, this.#submitFormHandler, this.#deleteCommentFilmCard);
     });
 
-    this.#filmComponent.setControlClickHandler(this.#changeFilmCard);
+    this.#filmComponent.setControlClickHandler(this.#changeFilmCardControls);
 
     if (prevFilmComponent === null) {
       renderElement(this.#filmsListContainer, this.#filmComponent);
@@ -49,15 +55,30 @@ export default class FilmPresenter {
 
   destroy = () => {
     removeComponent(this.#filmComponent);
+
+    this.#filmsListContainer = null;
+    this.#film = null;
+    this.#comments = null;
+
+    this.#popupMode = PopupMode.POPUP_CLOSE;
+
+    this.#changeData = null;
+    this.#changeMode = null;
+
+    this.#popupContainerComponent = null;
   }
 
-  #renderPopup = (film, updateFilmCard) => {
+  #renderPopup = (film, changePopupControls, formSubmit, deleteComment) => {
     this.#popupMode = PopupMode.POPUP_OPEN;
     this.#changeMode();
+    this.#comments = this.#getFilmComments(film.comments);
+
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#onEscKeyDown);
 
-    this.#popupContainerComponent = new PopupContainerView(film, updateFilmCard);
+    this.#runOnKeys();
+
+    this.#popupContainerComponent = new PopupContainerView(film, changePopupControls, this.#comments, formSubmit, deleteComment);
     renderElement(document.body, this.#popupContainerComponent);
 
     this.#popupContainerComponent.setCloseClickHandler(this.#closePopup);
@@ -79,9 +100,78 @@ export default class FilmPresenter {
     if (isEscapeEvent(key)) {
       this.#closePopup();
     }
+
   }
 
-  #changeFilmCard = (newDetailsData) => {
-    this.#changeData({...this.#film, userDetails: {...newDetailsData }});
+  #submitFormHandler = (newComment) => {
+    this.changeData(
+      UserAction.ADD_COMMENT,
+      UpdateType.ALL_LISTS,
+      {...this.#film, comments: {...newComment.id }});
+  }
+
+  #getFilmComments = (commentsIds) => {
+    const filmComments = [];
+
+    commentsIds.forEach((commentId) => {
+      let filmComment = null;
+      filmComment = getObjectKeyValue(this.#commentsModel.comments, 'id', commentId);
+
+      if(filmComment) {
+        filmComments.push(filmComment);
+      }
+    });
+
+    return filmComments;
+  }
+
+  #runOnKeys = (...keys) => {
+    document.addEventListener('keydown', (evt) => {
+      if (evt.repeat) {
+        return;
+      }
+      this.#keyArray = [...this.#keyArray, evt.key];
+      return this.#keyArray;
+    });
+
+    document.addEventListener('keyup', () => {
+      if (this.#keyArray.length === 0) {
+        return;
+      }
+
+      let runFunc = true;
+
+      keys.forEach((key) => {
+        if (!this.#keyArray.includes(key)) {
+          runFunc = false;
+        }
+      });
+
+      if (runFunc) {
+        this.#submitFormHandler();
+      }
+
+      this.#keyArray = [];
+    });
+
+  }
+
+  #changeFilmCardControls = (newDetailsData) => {
+    this.#changeData(
+      UserAction.CHANGE_CONTROLS,
+      UpdateType.MAJOR,
+      {...this.#film, userDetails: {...newDetailsData }});
+  }
+
+  #deleteCommentFilmCard = (commentId) => {
+    const index = this.#film.comments.findIndex((el) => el === commentId);
+
+    this.#changeData(
+      UserAction.DELETE_COMMENT,
+      UpdateType.MINOR_ALL_LISTS,
+      {...this.#film, comments:
+        {...this.#film.comments.slice(0, index),
+          ...this.#film.comments.slice(index+1),}
+      });
   }
 }

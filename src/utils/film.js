@@ -12,6 +12,7 @@ const UserRankLevels = {
 };
 
 const initialFilters = {
+  allMovies: 0,
   watchlist: 0,
   history: 0,
   favorites: 0,
@@ -52,11 +53,11 @@ export const getUrlImage = (folder, namesFiles) => {
 
 const isFilmInWatchList = (film) => Boolean(film.userDetails.watchList);
 
-const isFilmWatched = (film) => Boolean(film.userDetails.alreadyWatched);
+export const isFilmWatched = (film) => Boolean(film.userDetails.alreadyWatched);
 
 const isFilmFavorite = (film) => Boolean(film.userDetails.favorite);
 
-export const generateFilters = (films) => films.reduce((acc, currentFilm) => {
+const countFilterCurrentFilm = (acc, currentFilm) => {
   if (isFilmInWatchList(currentFilm)) {
     acc.watchlist++;
   }
@@ -68,6 +69,51 @@ export const generateFilters = (films) => films.reduce((acc, currentFilm) => {
   if (isFilmFavorite(currentFilm)) {
     acc.favorites++;
   }
-
   return acc;
-}, initialFilters);
+};
+
+export const countFiltersValue = (films) => {
+  const amountAllFilms = films.length;
+  const countFilters = films.reduce((acc, currentFilm) =>
+    countFilterCurrentFilm(acc, currentFilm), initialFilters);
+  countFilters.allMovies = amountAllFilms;
+
+  return countFilters;
+};
+
+export const filterFilms = (films, filter) => {
+  console.log('start filter');
+  console.log(filter);
+  const filteredFilms = [];
+
+  switch (filter) {
+    case 'allMovies':
+      films.forEach((film) => filteredFilms.push(film));
+      break;
+    case 'watchlist':
+      films.forEach((film) => {
+        if (isFilmInWatchList(film)) {
+          filteredFilms.push(film);
+        }
+      });
+      break;
+    case 'history':
+      films.forEach((film) => {
+        if (isFilmWatched(film)) {
+          filteredFilms.push(film);
+        }
+      });
+      break;
+    case 'favorites':
+      films.forEach((film) => {
+        if (isFilmFavorite(film)) {
+          filteredFilms.push(film);
+        }
+      });
+      break;
+    default:
+      throw new Error(`Unknown filter type ${filter}`);
+  }
+  console.log(films);
+  return films;
+};

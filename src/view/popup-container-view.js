@@ -20,12 +20,20 @@ export default class PopupContainerView extends AbstractView {
   #film = null;
 
   #updateFilmCard = null;
+  #comments = null;
 
-  constructor(film, updateFilmCard) {
+  #formSubmit = null;
+  #deleteComment = null;
+
+  constructor(film, updateFilmCard, comments, formSubmit, deleteComment) {
     super();
     this.#film = film;
 
     this.#updateFilmCard = updateFilmCard;
+    this.#comments = comments;
+
+    this.formSubmit = formSubmit;
+    this.#deleteComment = deleteComment;
   }
 
   get element() {
@@ -43,7 +51,7 @@ export default class PopupContainerView extends AbstractView {
     renderElement(this.topContainer, new PopupInfoContainerView(this.#film));
     renderElement(this.topContainer, this.popupControls);
     renderElement(this.bottomContainer,
-      new PopupCommentsContainerView(this.#film.comments));
+      new PopupCommentsContainerView(this.#comments, this.#formSubmit, this.#deleteComment));
 
     return this.#element;
   }
@@ -62,4 +70,5 @@ export default class PopupContainerView extends AbstractView {
     evt.preventDefault();
     this._callback.click();
   }
+
 }

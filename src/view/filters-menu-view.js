@@ -1,7 +1,7 @@
 import AbstractView from './abstract-view.js';
 
 const createFilterItemTemplate = (name, count) => (
-  `<a href="#${name}" class="main-navigation__item">
+  `<a href="#${name}" class="main-navigation__item" data-menu-item="${name}">
     ${name.charAt(0).toUpperCase() + name.slice(1)}
     <span class="main-navigation__item-count">${count}</span>
   </a>`
@@ -12,7 +12,6 @@ const createMenuTemplate = (filters) => {
 
   return (
     `<div class="main-navigation__items">
-      <a href="#allMovies" class="main-navigation__item main-navigation__item--active">All movies</a>
       ${filtersMarkup}
     </div>`
   );
@@ -28,5 +27,19 @@ export default class MenuView extends AbstractView {
 
   get template() {
     return createMenuTemplate(this.#filters);
+  }
+
+  setFilterClickHandler = (callback) => {
+    this._callback.filterClick = callback;
+    this.element.addEventListener('click', this.#filterClickHandler);
+  }
+
+  #filterClickHandler = (evt) => {
+    if (evt.target.tagName !== 'A') {
+      return;
+    }
+
+    evt.preventDefault();
+    this._callback.filterClick(evt.target.dataset.menuItem);
   }
 }

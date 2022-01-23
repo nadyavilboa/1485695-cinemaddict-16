@@ -27,12 +27,27 @@ const createPopupCommentTemplate = ({emotion, comment, author, date}) => (
 export default class PopupCommentView extends AbstractView {
   #comment = null;
 
-  constructor(comment) {
+  #deleteComment = null;
+
+  constructor(comment, deleteComment) {
     super();
     this.#comment = comment;
+
+    this.#deleteComment = deleteComment;
+    this.setDeleteHandler();
   }
 
   get template() {
     return createPopupCommentTemplate(this.#comment);
+  }
+
+  setDeleteHandler = () => {
+    this.element.querySelector('.film-details__comment-delete')
+      .addEventListener('click', this.#deleteHandler);
+  }
+
+  #deleteHandler = (evt) => {
+    evt.preventDefault();
+    this.#deleteComment(this.#comment.id);
   }
 }

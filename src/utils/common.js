@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
-
-const AMOUNT_MINUTES_IN_HOUR = 60;
+import { TimeValues } from '../const.js';
 
 export const getRandomInteger = (numberLeft, numberRight) => {
   if (numberLeft === numberRight) {
@@ -43,14 +42,14 @@ export const getRandomDate = (maxDateGap, dateType) => {
 };
 
 export const countHourInDuration = (valueInteger) => {
-  const countHour = Math.floor(valueInteger / AMOUNT_MINUTES_IN_HOUR);
+  const countHour = Math.floor(valueInteger / TimeValues.AMOUNT_MINUTES_IN_HOUR);
   if (countHour !== 0) {
     return `${String(countHour)  }h`;
   }
 };
 
 export const countMinutesInDuration = (valueInteger) => {
-  const countMinutes = valueInteger % AMOUNT_MINUTES_IN_HOUR;
+  const countMinutes = valueInteger % TimeValues.AMOUNT_MINUTES_IN_HOUR;
   if (countMinutes !== 0) {
     return `${String(countMinutes)  }m`;
   }
@@ -69,6 +68,10 @@ export const getObjectKeyValue = (array, key, value) => {
 };
 
 export const isEscapeEvent = (key) => key === 'Escape';
+
+export const isEnterEvent = (key) => key === 'Enter';
+
+export const isControlEvent = (key) => key === 'Control';
 
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
