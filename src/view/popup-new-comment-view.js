@@ -1,11 +1,6 @@
 import SmartView from './smart-view.js';
-import { COMMENTS_EMOTION } from '../const.js';
+import { COMMENTS_EMOTION, BLANK_COMMENT } from '../const.js';
 import he from 'he';
-
-const BLANK_COMMENT = {
-  text: '',
-  emotion: 'smile',
-};
 
 const createPopupEmotionListTemplate = (emotionList, activeEmotion) => (
   `<div class="film-details__emoji-list">
@@ -47,6 +42,7 @@ const createPopupNewCommentTemplate = ({emotion, text}) => {
       </div>
       <label class="film-details__comment-label">
         <textarea
+          name="comment-text"
           class="film-details__comment-input"
           placeholder="Select reaction below and write comment here" name="comment"
         >${he.encode(text)}</textarea>

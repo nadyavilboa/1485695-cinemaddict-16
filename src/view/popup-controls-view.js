@@ -1,5 +1,6 @@
 import SmartView from './smart-view.js';
 import { ControlType } from '../const.js';
+import dayjs from 'dayjs';
 
 const createPopupControlsTemplate = ({watchList, alreadyWatched, favorite}) => (
   `<section class="film-details__controls">
@@ -67,7 +68,7 @@ export default class PopupControlsView extends SmartView {
         this._data = {...this._data, watchList: !this._data.watchList};
         break;
       case ControlType.ALREADY_WATCHED:
-        this._data = {...this._data, alreadyWatched: !this._data.alreadyWatched};
+        this._data = {...this._data, alreadyWatched: !this._data.alreadyWatched, watchingDate: dayjs().toDate()};
         break;
       case ControlType.FAVORITE:
         this._data = {...this._data, favorite: !this._data.favorite};

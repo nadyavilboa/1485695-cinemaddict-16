@@ -1,4 +1,4 @@
-import { getActualRank, isFilmWatched } from './film.js';
+import { isFilmWatched } from './film.js';
 import { TimeValues, Color } from '../const.js';
 import dayjs from 'dayjs';
 

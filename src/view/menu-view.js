@@ -1,16 +1,16 @@
 import AbstractView from './abstract-view.js';
 
-const createMenuContainerTemplate = () => (
+const createMenuTemplate = () => (
   `<nav class="main-navigation">
   </nav>`
 );
 
-export default class MenuContainerView extends AbstractView {
+export default class MenuView extends AbstractView {
   get template() {
-    return createMenuContainerTemplate();
+    return createMenuTemplate();
   }
 
-  setMenuClickHandler = (callback) => {
+  setClickHandler = (callback) => {
     this._callback.menuClick = callback;
     this.element.addEventListener('click', this.#menuClickHandler);
   }

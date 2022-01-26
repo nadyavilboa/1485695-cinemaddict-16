@@ -1,15 +1,14 @@
-import FiltersMenuView from '../view/filters-menu-view.js';
+import FiltersView from '../view/filters-view.js';
 import { renderElement, replace, removeComponent } from '../utils/render.js';
 import { MenuItem, UpdateType } from '../const.js';
 import { countFiltersValue } from '../utils/film.js';
-import { countFilters } from '../main.js';
 
 export default class FilterPresenter {
   #menuContainer = null;
   #filterModel = null;
   #filmsModel = null;
 
-  #filtersMenuComponent = null;
+  #filtersComponent = null;
 
   constructor(menuContainer, filmsModel, filterModel) {
     this.#menuContainer = menuContainer;
@@ -17,59 +16,61 @@ export default class FilterPresenter {
     this.#filmsModel = filmsModel;
   }
 
-  get filter() {
+  get filters() {
     const films = this.#filmsModel.films;
+    const filteredFilms = countFiltersValue(films);
 
     return [
       {
-        type: MenuItem.ALL_MOVIES,
+        type: MenuItem.ALL,
         name: 'All movies',
-        count: countFiltersValue(films).allMovies,
+        count: null,
       },
       {
         type: MenuItem.WATCHLIST,
         name: 'Watchlist',
-        count: countFiltersValue(films).watchlist,
+        count: filteredFilms.watchlist,
       },
       {
         type: MenuItem.HISTORY,
         name: 'History',
-        count: countFiltersValue(films).history,
+        count: filteredFilms.history,
       },
       {
         type: MenuItem.FAVORITES,
         name: 'Favorites',
-        count: countFiltersValue(films).favorites,
+        count: filteredFilms.favorites,
       },
     ];
   }
 
   init = () => {
-    const prevFiltersMenuComponent = this.#filtersMenuComponent;
+    const filters = this.filters;
+    const prevFiltersComponent = this.#filtersComponent;
 
-    this.#filtersMenuComponent = new FiltersMenuView(countFilters);
-    this.#filtersMenuComponent.setFilterClickHandler(this.#handleFilterTypeChange);
+    this.#filtersComponent = new FiltersView(filters, this.#filterModel.filter);
+    this.#menuContainer.setClickHandler(this.#handleFilterTypeChange);
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
-    if (!prevFiltersMenuComponent) {
-      renderElement(this.#menuContainer, this.#filtersMenuComponent);
+    if (!prevFiltersComponent) {
+      renderElement(this.#menuContainer, this.#filtersComponent);
       return;
     }
 
-    replace(this.#filtersMenuComponent, prevFiltersMenuComponent);
-    removeComponent(prevFiltersMenuComponent);
+    replace(this.#filtersComponent, prevFiltersComponent);
+    removeComponent(prevFiltersComponent);
   }
 
   destroy = () => {
-    removeComponent(this.#filtersMenuComponent);
-    this.#filtersMenuComponent = null;
+    removeComponent(this.#filtersComponent);
+    this.#filtersComponent = null;
 
     this.#filmsModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
 
-    this.#filterModel.setFilter(UpdateType.MINOR_BIG_LIST, MenuItem.ALL_MOVIES);
+    this.#filterModel.setFilter(UpdateType.MAJOR, MenuItem.ALL);
 
     this.#menuContainer = null;
     this.#filterModel = null;
@@ -81,11 +82,11 @@ export default class FilterPresenter {
   }
 
   #handleFilterTypeChange = (menuItem) => {
-    if (this.#filterModel.filter === menuItem) {
+    if (this.#filterModel.filter === menuItem || menuItem === MenuItem.STATS) {
       return;
     }
 
-    this.#filterModel.setFilter(UpdateType.MINOR_BIG_LIST, menuItem);
+    this.#filterModel.setFilter(UpdateType.MAJOR, menuItem);
   }
 
 }

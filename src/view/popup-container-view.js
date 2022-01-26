@@ -1,10 +1,10 @@
 import { createElement, renderElement } from '../utils/render.js';
-
 import PopupInfoContainerView from './popup-info-container-view.js';
 import PopupControlsView from './popup-controls-view.js';
 import PopupCommentsContainerView from './popup-comments-container-view.js';
 import AbstractView from './abstract-view.js';
 import PopupCloseButtonView from './popup-close-button-view.js';
+import { submitKeys } from '../const.js';
 
 const createPopupContainerTemplate = () => (
   `<section class="film-details">
@@ -22,17 +22,18 @@ export default class PopupContainerView extends AbstractView {
   #updateFilmCard = null;
   #comments = null;
 
-  #formSubmit = null;
+  #formElement= null;
   #deleteComment = null;
 
-  constructor(film, updateFilmCard, comments, formSubmit, deleteComment) {
+  #keyArray = [];
+
+  constructor(film, updateFilmCard, comments, deleteComment) {
     super();
     this.#film = film;
 
     this.#updateFilmCard = updateFilmCard;
     this.#comments = comments;
 
-    this.formSubmit = formSubmit;
     this.#deleteComment = deleteComment;
   }
 
@@ -41,8 +42,10 @@ export default class PopupContainerView extends AbstractView {
       this.#element = createElement(this.template);
     }
 
-    this.topContainer = this.#element.querySelector('.film-details__top-container');
-    this.bottomContainer = this.#element.querySelector('.film-details__bottom-container');
+    this.#formElement = this.#element.querySelector('.film-details__inner');
+
+    this.topContainer = this.#formElement.querySelector('.film-details__top-container');
+    this.bottomContainer = this.#formElement.querySelector('.film-details__bottom-container');
 
     this.popupControls = new PopupControlsView(
       this.#film.userDetails, this.#updateFilmCard);
@@ -51,7 +54,7 @@ export default class PopupContainerView extends AbstractView {
     renderElement(this.topContainer, new PopupInfoContainerView(this.#film));
     renderElement(this.topContainer, this.popupControls);
     renderElement(this.bottomContainer,
-      new PopupCommentsContainerView(this.#comments, this.#formSubmit, this.#deleteComment));
+      new PopupCommentsContainerView(this.#comments, this.#deleteComment));
 
     return this.#element;
   }
@@ -70,5 +73,47 @@ export default class PopupContainerView extends AbstractView {
     evt.preventDefault();
     this._callback.click();
   }
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.#runOnKeys(submitKeys, this._callback.formSubmit);
+  }
+
+  #runOnKeys = (keys, callback) => {
+    document.addEventListener('keydown', (evt) => {
+      if (evt.repeat) {
+        return;
+      }
+      this.#keyArray = [...this.#keyArray, evt.key];
+      return this.#keyArray;
+    });
+
+    document.addEventListener('keyup', () => {
+      if (this.#keyArray.length === 0) {
+        return;
+      }
+
+      let runFunc = true;
+
+      keys.forEach((key) => {
+        if (!this.#keyArray.includes(key)) {
+          runFunc = false;
+        }
+      });
+
+      if (runFunc) {
+        const formData = new FormData(this.#formElement);
+        const newComment = {
+          comment: formData.get('comment-text'),
+          emotion: formData.get('comment-emoji'),
+        };
+        callback(newComment);
+      }
+
+      this.#keyArray = [];
+    });
+
+  }
+
 
 }

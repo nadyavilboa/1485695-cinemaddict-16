@@ -1,22 +1,5 @@
 import { getRandomInteger, getRandomElements } from './common.js';
-
-const UserRankNames = {
-  LOW: 'Novice',
-  MIDDLE: 'Fan',
-  HIGH: 'Movie Buff',
-};
-
-const UserRankLevels = {
-  LOW: 10,
-  HIGH: 20,
-};
-
-const initialFilters = {
-  allMovies: 0,
-  watchlist: 0,
-  history: 0,
-  favorites: 0,
-};
+import { UserRankLevels, UserRankNames, MenuItem } from '../const.js';
 
 export const getActualRank = (watched) => {
   let rank;
@@ -72,48 +55,25 @@ const countFilterCurrentFilm = (acc, currentFilm) => {
   return acc;
 };
 
-export const countFiltersValue = (films) => {
-  const amountAllFilms = films.length;
-  const countFilters = films.reduce((acc, currentFilm) =>
-    countFilterCurrentFilm(acc, currentFilm), initialFilters);
-  countFilters.allMovies = amountAllFilms;
-
-  return countFilters;
-};
+export const countFiltersValue = (films) =>
+  films.reduce((acc, currentFilm) => countFilterCurrentFilm(acc, currentFilm),
+    {
+      watchlist: 0,
+      history: 0,
+      favorites: 0,
+    });
 
 export const filterFilms = (films, filter) => {
-  console.log('start filter');
-  console.log(filter);
-  const filteredFilms = [];
-
   switch (filter) {
-    case 'allMovies':
-      films.forEach((film) => filteredFilms.push(film));
-      break;
-    case 'watchlist':
-      films.forEach((film) => {
-        if (isFilmInWatchList(film)) {
-          filteredFilms.push(film);
-        }
-      });
-      break;
-    case 'history':
-      films.forEach((film) => {
-        if (isFilmWatched(film)) {
-          filteredFilms.push(film);
-        }
-      });
-      break;
-    case 'favorites':
-      films.forEach((film) => {
-        if (isFilmFavorite(film)) {
-          filteredFilms.push(film);
-        }
-      });
-      break;
+    case MenuItem.ALL:
+      return films;
+    case MenuItem.WATCHLIST:
+      return films.filter((film) => isFilmInWatchList(film));
+    case MenuItem.HISTORY:
+      return films.filter((film) => isFilmWatched(film));
+    case MenuItem.FAVORITES:
+      return films.filter((film) => isFilmFavorite(film));
     default:
       throw new Error(`Unknown filter type ${filter}`);
   }
-  console.log(films);
-  return films;
 };
