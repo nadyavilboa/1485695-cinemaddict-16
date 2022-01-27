@@ -27,7 +27,9 @@ export default class PopupContainerView extends AbstractView {
 
   #keyArray = [];
 
-  constructor(film, updateFilmCard, comments, deleteComment) {
+  #scrollHeight = null;
+
+  constructor(film, updateFilmCard, comments, deleteComment, scrollHeight) {
     super();
     this.#film = film;
 
@@ -35,9 +37,12 @@ export default class PopupContainerView extends AbstractView {
     this.#comments = comments;
 
     this.#deleteComment = deleteComment;
+
+    this.#scrollHeight = scrollHeight;
   }
 
   get element() {
+
     if (!this.#element) {
       this.#element = createElement(this.template);
     }

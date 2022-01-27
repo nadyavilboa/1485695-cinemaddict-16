@@ -176,26 +176,26 @@ export default class FilmsListPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = (actionType, updateType, update, position) => {
     switch (actionType) {
       case UserAction.CHANGE_CONTROLS:
         this.#filmsModel.updateFilm(updateType, update);
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update);
+        this.#commentsModel.addComment(updateType, update, position);
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
+        this.#commentsModel.deleteComment(updateType, update, position);
         break;
       default:
         throw new Error(`Unknown userActionType type ${actionType}`);
     }
   }
 
-  #handleModelEvent = (updateType, data) => {
+  #handleModelEvent = (updateType, data, position) => {
     switch (updateType) {
       case UpdateType.PATH:
-        this.#filmPresenter.get(data.id).init(data);
+        this.#filmPresenter.get(data.id).init(data, position);
         break;
       case UpdateType.MINOR:
         this.#renderSectionFilms();

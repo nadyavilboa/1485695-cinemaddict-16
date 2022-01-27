@@ -30,14 +30,15 @@ export default class FilmPresenter {
     this.#commentsModel = commentsModel;
   }
 
-  init = (film) => {
+  init = (film, position) => {
+    const scrollHeight = position ? position : 0;
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
 
     this.#filmComponent = new FilmView(film);
     this.#filmComponent.setFilmCardClickHandler(() => {
-      this.#renderPopup(film, this.#changeFilmCardControls, this.#submitForm, this.#deleteCommentFilmCard);
+      this.#renderPopup(film, this.#changeFilmCardControls, this.#deleteCommentFilmCard, scrollHeight);
     });
 
     this.#filmComponent.setControlClickHandler(this.#changeFilmCardControls);
@@ -52,7 +53,7 @@ export default class FilmPresenter {
 
     if (this.#popupContainerComponent) {
       removeComponent(this.#popupContainerComponent);
-      this.#renderPopup(film, this.#changeFilmCardControls, this.#submitForm, this.#deleteCommentFilmCard);
+      this.#renderPopup(film, this.#changeFilmCardControls, this.#deleteCommentFilmCard, scrollHeight);
     }
   }
 
@@ -71,7 +72,7 @@ export default class FilmPresenter {
     this.#popupContainerComponent = null;
   }
 
-  #renderPopup = (film, changePopupControls, formSubmit, deleteComment) => {
+  #renderPopup = (film, changePopupControls, deleteComment, scrollHeight) => {
     this.#popupMode = PopupMode.POPUP_OPEN;
     this.#changeMode();
     this.#commentsModel.init(this.#film.id).finally(() => {
@@ -82,6 +83,9 @@ export default class FilmPresenter {
 
       this.#popupContainerComponent = new PopupContainerView(film, changePopupControls, this.#comments, deleteComment);
       renderElement(document.body, this.#popupContainerComponent);
+
+      const popup = document.body.querySelector('.film-details');
+      popup.scrollTo(0, scrollHeight);
 
       this.#popupContainerComponent.setCloseClickHandler(this.#closePopup);
       this.#popupContainerComponent.setFormSubmitHandler(this.#submitForm);
@@ -109,11 +113,13 @@ export default class FilmPresenter {
   }
 
   #submitForm = (newComment) => {
+    const scrollHeight = this.#popupContainerComponent.element.scrollHeight;
     const filmId = this.#film.id;
     this.#changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PATH,
-      { filmId, newComment }
+      { filmId, newComment },
+      scrollHeight
     );
   }
 
@@ -125,10 +131,12 @@ export default class FilmPresenter {
   }
 
   #deleteCommentFilmCard = (commentId) => {
+    const scrollHeight = this.#popupContainerComponent.element.scrollHeight;
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATH,
       { commentId, film: this.#film },
+      scrollHeight,
     );
   }
 }
