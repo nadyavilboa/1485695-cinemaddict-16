@@ -1,6 +1,6 @@
 export const ApiParameters = {
   AUTHORIZATION: 'Basic 21mflsldsr345kl',
-  END_POINT: 'https://16.ecmascript.pages.academy/cinemaddict/',
+  END_POINT: 'https://16.ecmascript.pages.academy/cinemaddict',
 };
 
 export const Method = {
