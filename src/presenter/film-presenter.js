@@ -31,14 +31,15 @@ export default class FilmPresenter {
   }
 
   init = (film, position) => {
-    const scrollHeight = position ? position : 0;
+    const scrollPosition = position ? position : 0;
+
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
 
     this.#filmComponent = new FilmView(film);
     this.#filmComponent.setFilmCardClickHandler(() => {
-      this.#renderPopup(film, this.#changeFilmCardControls, this.#deleteCommentFilmCard, scrollHeight);
+      this.#renderPopup(film, this.#changeFilmCardControls, this.#deleteCommentFilmCard, scrollPosition);
     });
 
     this.#filmComponent.setControlClickHandler(this.#changeFilmCardControls);
@@ -53,7 +54,7 @@ export default class FilmPresenter {
 
     if (this.#popupContainerComponent) {
       removeComponent(this.#popupContainerComponent);
-      this.#renderPopup(film, this.#changeFilmCardControls, this.#deleteCommentFilmCard, scrollHeight);
+      this.#renderPopup(film, this.#changeFilmCardControls, this.#deleteCommentFilmCard, scrollPosition);
     }
   }
 
@@ -72,7 +73,7 @@ export default class FilmPresenter {
     this.#popupContainerComponent = null;
   }
 
-  #renderPopup = (film, changePopupControls, deleteComment, scrollHeight) => {
+  #renderPopup = (film, changePopupControls, deleteComment, scrollPosition) => {
     this.#popupMode = PopupMode.POPUP_OPEN;
     this.#changeMode();
     this.#commentsModel.init(this.#film.id).finally(() => {
@@ -84,8 +85,7 @@ export default class FilmPresenter {
       this.#popupContainerComponent = new PopupContainerView(film, changePopupControls, this.#comments, deleteComment);
       renderElement(document.body, this.#popupContainerComponent);
 
-      const popup = document.body.querySelector('.film-details');
-      popup.scrollTo(0, scrollHeight);
+      document.body.querySelector('.film-details').scrollTo(0, scrollPosition);
 
       this.#popupContainerComponent.setCloseClickHandler(this.#closePopup);
       this.#popupContainerComponent.setFormSubmitHandler(this.#submitForm);
@@ -113,30 +113,33 @@ export default class FilmPresenter {
   }
 
   #submitForm = (newComment) => {
-    const scrollHeight = this.#popupContainerComponent.element.scrollHeight;
+    const position = document.body.querySelector('.film-details').scrollTop;
     const filmId = this.#film.id;
     this.#changeData(
       UserAction.ADD_COMMENT,
       UpdateType.PATH,
       { filmId, newComment },
-      scrollHeight
+      position,
     );
   }
 
   #changeFilmCardControls = (newDetailsData) => {
+    const position = document.body.querySelector('.film-details').scrollTop;
     this.#changeData(
       UserAction.CHANGE_CONTROLS,
-      UpdateType.MAJOR,
-      {...this.#film, userDetails: {...newDetailsData }});
+      UpdateType.PATH,
+      {...this.#film, userDetails: {...newDetailsData }},
+      position,
+    );
   }
 
   #deleteCommentFilmCard = (commentId) => {
-    const scrollHeight = this.#popupContainerComponent.element.scrollHeight;
+    const position = document.body.querySelector('.film-details').scrollTop;
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATH,
       { commentId, film: this.#film },
-      scrollHeight,
+      position,
     );
   }
 }

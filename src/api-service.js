@@ -37,7 +37,7 @@ export default class ApiService {
       headers: new Headers({'Content-Type': 'application/json'}),
     });
 
-    return response;
+    return response.json();
   }
 
   deleteComment = async (commentId) => {

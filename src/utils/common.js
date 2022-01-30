@@ -1,46 +1,6 @@
 import dayjs from 'dayjs';
 import { TimeValues } from '../const.js';
 
-export const getRandomInteger = (numberLeft, numberRight) => {
-  if (numberLeft === numberRight) {
-    return numberLeft;
-  }
-  if (numberLeft > numberRight) {
-    getRandomInteger(numberRight, numberLeft);
-  }
-  const randResult = numberLeft + Math.random() * (numberRight + 1 - numberLeft);
-  return Math.floor(randResult);
-};
-
-export const getRandomElements = (array, numberLeft = 1, numberRight = array.length) => {
-  const randomArray = [];
-  let number = Math.abs(getRandomInteger(numberLeft, numberRight) - 1);
-  let length = Math.abs(getRandomInteger(numberLeft, numberRight));
-  if (number > length) {
-    const swapper = number;
-    number = length;
-    length = swapper;
-  }
-  if (number === length) {
-    length++;
-  }
-  for (let i = number; i < length; i++) {
-    randomArray.push(array[i]);
-  }
-  return randomArray;
-};
-
-export const addIdObjects = (array) => {
-  array.forEach((element, index) => {
-    element.id = index;
-  });
-};
-
-export const getRandomDate = (maxDateGap, dateType) => {
-  const dateGap = getRandomInteger(-maxDateGap, 0);
-  return dayjs().add(dateGap, dateType).toDate();
-};
-
 export const countHourInDuration = (valueInteger) => {
   const countHour = Math.floor(valueInteger / TimeValues.AMOUNT_MINUTES_IN_HOUR);
   if (countHour !== 0) {
@@ -67,10 +27,6 @@ export const getObjectKeyValue = (array, key, value) => {
 };
 
 export const isEscapeEvent = (key) => key === 'Escape';
-
-export const isEnterEvent = (key) => key === 'Enter';
-
-export const isControlEvent = (key) => key === 'Control';
 
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);

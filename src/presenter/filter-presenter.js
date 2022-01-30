@@ -10,6 +10,8 @@ export default class FilterPresenter {
 
   #filtersComponent = null;
 
+  #isStatsActive = false;
+
   constructor(menuContainer, filmsModel, filterModel) {
     this.#menuContainer = menuContainer;
     this.#filterModel = filterModel;
@@ -82,7 +84,12 @@ export default class FilterPresenter {
   }
 
   #handleFilterTypeChange = (menuItem) => {
-    if (this.#filterModel.filter === menuItem || menuItem === MenuItem.STATS) {
+    if (menuItem === MenuItem.STATS) {
+      this.#isStatsActive = true;
+      return;
+    }
+
+    if (menuItem === this.#filterModel.filter && !this.#isStatsActive) {
       return;
     }
 

@@ -15,6 +15,7 @@ import {
   UserAction,
   FILMS_AMOUNT_PER_STEP,
   FILMS_EXTRA_AMOUNT,
+  MenuItem,
 } from '../const.js';
 
 export default class FilmsListPresenter {
@@ -31,22 +32,19 @@ export default class FilmsListPresenter {
   #filmsSectionComponent = new FilmSectionView();
 
   #filmPresenter = new Map();
-  #ratingPresenter = null;
 
   #currentSortType = SortType.DEFAULT;
 
   #renderedFilmsAmount = FILMS_AMOUNT_PER_STEP;
 
-  #isLoading = true;
 
-  constructor (siteMainElement, filmsModel, commentsModel, filterModel, ratingPresenter) {
+  constructor (siteMainElement, filmsModel, commentsModel, filterModel) {
     this.#siteMainElement = siteMainElement;
 
     this.#filmsModel = filmsModel;
     this.#commentsModel = commentsModel;
     this.#filterModel = filterModel;
 
-    this.#ratingPresenter = ratingPresenter;
   }
 
   get films() {
@@ -65,8 +63,7 @@ export default class FilmsListPresenter {
   }
 
   init = () => {
-    this.#renderSort();
-
+    this.#renderLoading();
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
     this.#commentsModel.addObserver(this.#handleModelEvent);
@@ -92,25 +89,44 @@ export default class FilmsListPresenter {
     renderElement(this.#siteMainElement, this.#sortMenuComponent);
   }
 
-  #renderSectionFilms = () => {
-    if (this.#isLoading) {
-      this.#renderLoading();
-      return;
-    }
+  #removeSort = () => {
+    removeComponent(this.#sortMenuComponent);
+    this.#sortMenuComponent = null;
+  }
 
+  #renderSectionFilms = () => {
     const films = this.films;
     const filmsCount = films.length;
+    const currentFilter = this.#filterModel.filter;
 
-    if (filmsCount === 0) {
-      this.#buildEmptyContainer(FilmsTitle.EMPTY, true);
-      return;
-    }
+    this.#renderSort();
 
     renderElement(this.#siteMainElement, this.#filmsSectionComponent);
 
+    if (filmsCount === 0) {
+      this.#removeSort();
+
+      switch (currentFilter) {
+        case MenuItem.ALL:
+          this.#buildEmptyContainer(FilmsTitle.EMPTY_FULL, true);
+          break;
+        case MenuItem.WATCHLIST:
+          this.#buildEmptyContainer(FilmsTitle.EMPTY_WATCHLIST, true);
+          break;
+        case MenuItem.HISTORY:
+          this.#buildEmptyContainer(FilmsTitle.EMPTY_HISTORY, true);
+          break;
+        case MenuItem.FAVORITES:
+          this.#buildEmptyContainer(FilmsTitle.EMPTY_FAVORITES, true);
+          break;
+        default:
+          throw new Error(`Unknown filter type ${currentFilter}`);
+      }
+
+      return;
+    }
+
     this.buildContainer(FilmsTitle.FULL, false, films);
-    this.buildContainer(FilmsTitle.TOP_RATED, true, films.sort(sortByRating));
-    this.buildContainer(FilmsTitle.MOST_COMMENTED, true, films.sort(sortByAmountComments));
   }
 
   buildContainer = (title, isExtra, filmsToRender) => {
@@ -179,7 +195,7 @@ export default class FilmsListPresenter {
   #handleViewAction = (actionType, updateType, update, position) => {
     switch (actionType) {
       case UserAction.CHANGE_CONTROLS:
-        this.#filmsModel.updateFilm(updateType, update);
+        this.#filmsModel.updateFilm(updateType, update, position);
         break;
       case UserAction.ADD_COMMENT:
         this.#commentsModel.addComment(updateType, update, position);
@@ -197,20 +213,15 @@ export default class FilmsListPresenter {
       case UpdateType.PATH:
         this.#filmPresenter.get(data.id).init(data, position);
         break;
-      case UpdateType.MINOR:
-        this.#renderSectionFilms();
-        break;
       case UpdateType.MAJOR:
         removeComponent(this.#sortMenuComponent);
-        this.#renderSort();
-        //this.#ratingPresenter.destroy();
-        //this.#ratingPresenter.init();
+        removeComponent(this.#loadingComponent);
         this.#clearFilmsSection();
         this.#renderSectionFilms();
         break;
       case UpdateType.INIT:
-        this.#isLoading = false;
         removeComponent(this.#loadingComponent);
+        this.#clearFilmsSection();
         this.#renderSectionFilms();
         break;
       default:
@@ -222,6 +233,7 @@ export default class FilmsListPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.destroy());
     this.#filmPresenter.clear();
 
+    this.#removeSort();
     this.#renderedFilmsAmount = FILMS_AMOUNT_PER_STEP;
     removeComponent(this.#filmsSectionComponent);
   }
@@ -233,8 +245,6 @@ export default class FilmsListPresenter {
 
     this.#currentSortType = sortType;
 
-    removeComponent(this.#sortMenuComponent);
-    this.#renderSort();
     this.#clearFilmsSection();
     renderElement(this.#siteMainElement, this.#filmsSectionComponent);
     this.#renderSectionFilms();

@@ -1,4 +1,3 @@
-import { getRandomInteger, getRandomElements } from './common.js';
 import { UserRankLevels, UserRankNames, MenuItem } from '../const.js';
 
 export const getActualRank = (watched) => {
@@ -17,21 +16,6 @@ export const getActualRank = (watched) => {
   }
 
   return rank;
-};
-
-export const generateCommentsFilm = (comments) => {
-  const commentsFilm = [];
-  getRandomElements(comments, 0, 5).forEach((element) => {
-    if (element) {
-      commentsFilm.push(element.id);
-    }
-  });
-  return commentsFilm;
-};
-
-export const getUrlImage = (folder, namesFiles) => {
-  const numberFilm = getRandomInteger(1, namesFiles.length) - 1;
-  return `${folder}${namesFiles[numberFilm]}`;
 };
 
 const isFilmInWatchList = (film) => Boolean(film.userDetails.watchList);

@@ -68,7 +68,7 @@ export default class PopupControlsView extends SmartView {
         this._data = {...this._data, watchList: !this._data.watchList};
         break;
       case ControlType.ALREADY_WATCHED:
-        this._data = {...this._data, alreadyWatched: !this._data.alreadyWatched, watchingDate: dayjs().toDate()};
+        this._data = {...this._data, alreadyWatched: !this._data.alreadyWatched, watchingDate: !this._data.watchingDate ? dayjs().toDate() : null};
         break;
       case ControlType.FAVORITE:
         this._data = {...this._data, favorite: !this._data.favorite};

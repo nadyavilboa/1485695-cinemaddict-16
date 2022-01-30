@@ -26,7 +26,7 @@ const filterModel = new FilterModel();
 const menuComponent = new MenuView();
 
 const ratingPresenter = new RatingPresenter(headerElement, filmsModel);
-const filmsListPresenter = new FilmsListPresenter(siteMainElement, filmsModel, commentsModel, filterModel, ratingPresenter);
+const filmsListPresenter = new FilmsListPresenter(siteMainElement, filmsModel, commentsModel, filterModel);
 const filterPresenter = new FilterPresenter(menuComponent, filmsModel, filterModel);
 
 let statisticsComponent = null;
@@ -34,17 +34,9 @@ let statisticsComponent = null;
 const handleMenuClick = (menuItem) => {
   if (menuItem === MenuItem.STATS) {
     filmsListPresenter.destroy();
-    filterPresenter.destroy();
-
-    filterPresenter.init();
-
-    //this.#ratingPresenter.destroy();
-    //this.#ratingPresenter.init();
-
     const watchedFilms = getWatchedFilms(filmsModel.films);
     const userRank = getActualRank(watchedFilms.length);
     statisticsComponent = new StatisticsView(watchedFilms, userRank, StatisticsPeriods[0].value);
-    renderElement(siteMainElement, menuComponent);
     renderElement(siteMainElement, statisticsComponent);
     statisticsComponent.render();
     return;
@@ -56,7 +48,6 @@ const handleMenuClick = (menuItem) => {
 };
 
 renderElement(headerElement, new HeaderLogoView());
-ratingPresenter.init();
 
 renderElement(siteMainElement, menuComponent);
 
@@ -68,5 +59,6 @@ filterPresenter.init();
 filmsListPresenter.init();
 
 filmsModel.init().finally(() => {
+  ratingPresenter.init();
   renderElement(footerElement, new FooterStatisticsView(filmsModel.films.length));
 });

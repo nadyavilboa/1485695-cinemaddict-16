@@ -34,7 +34,10 @@ export const TimeValues = {
 };
 
 export const FilmsTitle = {
-  EMPTY: 'There are no movies in our database',
+  EMPTY_FULL: 'There are no movies in our database',
+  EMPTY_WATCHLIST: 'There are no movies to watch now',
+  EMPTY_HISTORY: 'There are no watched movies now',
+  EMPTY_FAVORITES: 'There are no favorite movies now',
   FULL: 'All movies. Upcoming',
   TOP_RATED: 'Top rated',
   MOST_COMMENTED: 'Most commented',
@@ -62,7 +65,6 @@ export const UserAction = {
 
 export const UpdateType = {
   PATH: 'PATH',
-  MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
 };

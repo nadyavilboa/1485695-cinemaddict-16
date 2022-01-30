@@ -6,12 +6,14 @@ const createMenuTemplate = () => (
 );
 
 export default class MenuView extends AbstractView {
+  #callbacks = [];
+
   get template() {
     return createMenuTemplate();
   }
 
   setClickHandler = (callback) => {
-    this._callback.menuClick = callback;
+    this.#callbacks.push(callback);
     this.element.addEventListener('click', this.#menuClickHandler);
   }
 
@@ -21,6 +23,6 @@ export default class MenuView extends AbstractView {
     }
 
     evt.preventDefault();
-    this._callback.menuClick(evt.target.dataset.menuItem);
+    this.#callbacks.forEach((cb) => cb(evt.target.dataset.menuItem));
   }
 }
