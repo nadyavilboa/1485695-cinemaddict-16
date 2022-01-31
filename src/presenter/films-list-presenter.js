@@ -1,11 +1,11 @@
-import loadingView from '../view/loading-view.js';
+import LoadingView from '../view/loading-view.js';
 import FilmSectionView from '../view/film-section-view.js';
 import FilmsContainerView from '../view/films-container-view.js';
 import FilmsListContainerView from '../view/films-list-container-view.js';
 import SortView from '../view/sort-view.js';
 import ButtonShowMoreView from '../view/button-show-more-view.js';
 import FilmPresenter from './film-presenter.js';
-import { sortByAmountComments, sortByDate, sortByRating } from '../utils/common.js';
+import { sortByDate, sortByRating } from '../utils/common.js';
 import { filterFilms } from '../utils/film.js';
 import { renderElement, removeComponent } from '../utils/render.js';
 import {
@@ -27,7 +27,7 @@ export default class FilmsListPresenter {
 
   #sortMenuComponent = null;
 
-  #loadingComponent = new loadingView();
+  #loadingComponent = new LoadingView();
   #buttonShowMoreComponent = new ButtonShowMoreView();
   #filmsSectionComponent = new FilmSectionView();
 
@@ -51,12 +51,13 @@ export default class FilmsListPresenter {
     const currentFilter = this.#filterModel.filter;
     const films = this.#filmsModel.films;
     const filteredFilms = filterFilms(films, currentFilter);
+    const copyFilteredFilms = filteredFilms.slice();
 
     switch (this.#currentSortType) {
       case SortType.TO_DATE:
-        return filteredFilms.sort(sortByDate);
+        return copyFilteredFilms.sort(sortByDate);
       case SortType.TO_RATING:
-        return filteredFilms.sort(sortByRating);
+        return copyFilteredFilms.sort(sortByRating);
       default:
         return filteredFilms;
     }
@@ -216,6 +217,7 @@ export default class FilmsListPresenter {
       case UpdateType.MAJOR:
         removeComponent(this.#sortMenuComponent);
         removeComponent(this.#loadingComponent);
+        this.#currentSortType = SortType.DEFAULT;
         this.#clearFilmsSection();
         this.#renderSectionFilms();
         break;

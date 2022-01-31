@@ -4,7 +4,6 @@ import PopupControlsView from './popup-controls-view.js';
 import PopupCommentsContainerView from './popup-comments-container-view.js';
 import AbstractView from './abstract-view.js';
 import PopupCloseButtonView from './popup-close-button-view.js';
-import { submitKeys } from '../const.js';
 
 const createPopupContainerTemplate = () => (
   `<section class="film-details">
@@ -64,6 +63,16 @@ export default class PopupContainerView extends AbstractView {
     return createPopupContainerTemplate();
   }
 
+  get scrollTopOffset() {
+    return this.#element.scrollTop;
+  }
+
+  scrollPopup = (scrollPosition) => {
+    this.#element.scrollTo(0, scrollPosition);
+  }
+
+  getFormData = () => new FormData(this.#formElement);
+
   setCloseClickHandler = (callback) => {
     this._callback.click = callback;
     this.#element.querySelector('.film-details__close-btn')
@@ -74,47 +83,5 @@ export default class PopupContainerView extends AbstractView {
     evt.preventDefault();
     this._callback.click();
   }
-
-  setFormSubmitHandler = (callback) => {
-    this._callback.formSubmit = callback;
-    this.#runOnKeys(submitKeys, this._callback.formSubmit);
-  }
-
-  #runOnKeys = (keys, callback) => {
-    document.addEventListener('keydown', (evt) => {
-      if (evt.repeat) {
-        return;
-      }
-      this.#keyArray = [...this.#keyArray, evt.key];
-      return this.#keyArray;
-    });
-
-    document.addEventListener('keyup', () => {
-      if (this.#keyArray.length === 0) {
-        return;
-      }
-
-      let runFunc = true;
-
-      keys.forEach((key) => {
-        if (!this.#keyArray.includes(key)) {
-          runFunc = false;
-        }
-      });
-
-      if (runFunc) {
-        const formData = new FormData(this.#formElement);
-        const newComment = {
-          comment: formData.get('comment-text'),
-          emotion: formData.get('comment-emoji'),
-        };
-        callback(newComment);
-      }
-
-      this.#keyArray = [];
-    });
-
-  }
-
 
 }

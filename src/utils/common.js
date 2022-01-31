@@ -19,27 +19,18 @@ export const sortByDate = (firstFilm, secondFilm) => dayjs(secondFilm.release.da
 
 export const sortByRating = (firstFilm, secondFilm) => secondFilm.totalRating - firstFilm.totalRating;
 
-export const sortByAmountComments = (firstFilm, secondFilm) => secondFilm.comments.length - firstFilm.comments.length;
-
-export const getObjectKeyValue = (array, key, value) => {
-  const result = array.find((obj) => obj[key] === value);
-  return result;
-};
-
 export const isEscapeEvent = (key) => key === 'Escape';
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+let isControl = false;
 
-  if (index === -1) {
-    return items;
+export const isCtrlEnterEvent = (evt) => {
+  if (evt.key === 'Control') {
+    isControl = true;
   }
 
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
+  if (isControl && evt.key === 'Enter') {
+    return true;
+  }
 };
 
 export const adaptToClient = (film) => {
