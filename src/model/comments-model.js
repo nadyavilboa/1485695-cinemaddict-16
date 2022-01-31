@@ -1,33 +1,52 @@
 import AbstractObservable from '../utils/abstract-observable.js';
-import { generateComment } from '../mock/comments.js';
+import { adaptToClient } from '../utils/common.js';
 
 export default class CommentsModel extends AbstractObservable {
+  #apiService = null;
   #comments = [];
 
-  set comments(comments) {
-    this.#comments = [...comments];
+  constructor(apiService) {
+    super();
+    this.#apiService = apiService;
   }
 
   get comments() {
     return this.#comments;
   }
 
-  //при вводе коммента получаем текст и эмоцию, нужно сгенерировать полный объект комментария
-  //иначе откуда возмутся данные об авторе, дате коммента и т.д.
+  init = async (filmId) => {
+    try {
+      const commentsFilm = await this.#apiService.getCommentsFilm(filmId);
+      this.#comments = commentsFilm;
+    } catch(err) {
+      this.#comments = [];
+    }
 
-  addComment = (updateType, data) => {
-    const newComment = generateComment(); //объект со всеми полями
-    newComment.comment = data.text; //заполняем данными от пользователя
-    newComment.emotion = data.emotion;
+  }
 
-    this.#comments = [newComment, ...this.#comments];
-
-    this._notify(updateType, newComment);
+  addComment = async (updateType, update, position) => {
+    try {
+      const { movie, comments } = await this.#apiService.addComment(update.filmId, update.newComment);
+      const updatedFilm = adaptToClient(movie);
+      this.#comments = comments;
+      this._notify(updateType, updatedFilm, position);
+    } catch(err) {
+      throw new Error('Can\'t add comment');
+    }
   };
 
-  deleteComment = (updateType, commentId) => {
-    this.#comments = this.#comments.filter(({id}) => id !== commentId);
+  deleteComment = async (updateType, { commentId, film }, position) => {
+    try {
+      await this.#apiService.deleteComment(commentId);
 
-    this._notify(updateType);
-  };
+      this.#comments = this.#comments.filter(({id}) => id !== commentId);
+      const commentsIds = this.#comments.map(({id}) => id);
+
+      const updateFilm = { ...film, comments: commentsIds };
+
+      this._notify(updateType, updateFilm, position);
+    } catch(err) {
+      throw new Error('Can\'t delete comment');
+    }
+  }
 }

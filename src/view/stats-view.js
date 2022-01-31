@@ -11,9 +11,7 @@ import {
   getEmptyStatistics,
 } from '../utils/statistics.js';
 import SmartView from './smart-view';
-import { StatisticsPeriods, Color, TimeValues } from '../const.js';
-
-const BAR_HEIGHT = 50;
+import { StatisticsPeriods, Color, TimeValues, BAR_HEIGHT } from '../const.js';
 
 const renderFilmsChart = (statisticCtx, films) => {
   const statisticsGenres = getStatisticsGenres(films);

@@ -17,14 +17,12 @@ export default class PopupCommentsContainerView extends AbstractView {
   #element = null;
   #comments = null;
 
-  #formSubmit = null;
   #deleteComment = null;
 
-  constructor(comments, formSubmit, deleteComment) {
+  constructor(comments, deleteComment) {
     super();
     this.#comments = comments;
 
-    this.#formSubmit = formSubmit;
     this.#deleteComment = deleteComment;
 
   }

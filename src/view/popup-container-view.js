@@ -1,5 +1,4 @@
 import { createElement, renderElement } from '../utils/render.js';
-
 import PopupInfoContainerView from './popup-info-container-view.js';
 import PopupControlsView from './popup-controls-view.js';
 import PopupCommentsContainerView from './popup-comments-container-view.js';
@@ -22,27 +21,31 @@ export default class PopupContainerView extends AbstractView {
   #updateFilmCard = null;
   #comments = null;
 
-  #formSubmit = null;
+  #formElement= null;
   #deleteComment = null;
 
-  constructor(film, updateFilmCard, comments, formSubmit, deleteComment) {
+  #keyArray = [];
+
+  constructor(film, updateFilmCard, comments, deleteComment) {
     super();
     this.#film = film;
 
     this.#updateFilmCard = updateFilmCard;
     this.#comments = comments;
 
-    this.formSubmit = formSubmit;
     this.#deleteComment = deleteComment;
   }
 
   get element() {
+
     if (!this.#element) {
       this.#element = createElement(this.template);
     }
 
-    this.topContainer = this.#element.querySelector('.film-details__top-container');
-    this.bottomContainer = this.#element.querySelector('.film-details__bottom-container');
+    this.#formElement = this.#element.querySelector('.film-details__inner');
+
+    this.topContainer = this.#formElement.querySelector('.film-details__top-container');
+    this.bottomContainer = this.#formElement.querySelector('.film-details__bottom-container');
 
     this.popupControls = new PopupControlsView(
       this.#film.userDetails, this.#updateFilmCard);
@@ -51,7 +54,7 @@ export default class PopupContainerView extends AbstractView {
     renderElement(this.topContainer, new PopupInfoContainerView(this.#film));
     renderElement(this.topContainer, this.popupControls);
     renderElement(this.bottomContainer,
-      new PopupCommentsContainerView(this.#comments, this.#formSubmit, this.#deleteComment));
+      new PopupCommentsContainerView(this.#comments, this.#deleteComment));
 
     return this.#element;
   }
@@ -59,6 +62,16 @@ export default class PopupContainerView extends AbstractView {
   get template() {
     return createPopupContainerTemplate();
   }
+
+  get scrollTopOffset() {
+    return this.#element.scrollTop;
+  }
+
+  scrollPopup = (scrollPosition) => {
+    this.#element.scrollTo(0, scrollPosition);
+  }
+
+  getFormData = () => new FormData(this.#formElement);
 
   setCloseClickHandler = (callback) => {
     this._callback.click = callback;

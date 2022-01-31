@@ -1,3 +1,30 @@
+export const ApiParameters = {
+  AUTHORIZATION: 'Basic 21mflsldsr345kl',
+  END_POINT: 'https://16.ecmascript.pages.academy/cinemaddict',
+};
+
+export const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+export const RenderPosition = {
+  BEFORE_BEGIN: 'beforebegin',
+  AFTER_BEGIN: 'afterbegin',
+  BEFORE_END: 'beforeend',
+  AFTER_END: 'afterend',
+};
+
+export const FILMS_AMOUNT_PER_STEP = 5;
+export const FILMS_EXTRA_AMOUNT = 2;
+
+export const BLANK_COMMENT = {
+  text: '',
+  emotion: 'smile',
+};
+
 export const TimeValues = {
   AMOUNT_MINUTES_IN_HOUR: 60,
   AMOUNT_DAYS_IN_WEEK: 7,
@@ -7,7 +34,10 @@ export const TimeValues = {
 };
 
 export const FilmsTitle = {
-  EMPTY: 'There are no movies in our database',
+  EMPTY_FULL: 'There are no movies in our database',
+  EMPTY_WATCHLIST: 'There are no movies to watch now',
+  EMPTY_HISTORY: 'There are no watched movies now',
+  EMPTY_FAVORITES: 'There are no favorite movies now',
   FULL: 'All movies. Upcoming',
   TOP_RATED: 'Top rated',
   MOST_COMMENTED: 'Most commented',
@@ -34,22 +64,20 @@ export const UserAction = {
 };
 
 export const UpdateType = {
-  MINOR_BIG_LIST: 'MINOR_BIG_LIST',
-  MINOR_ALL_LISTS: 'MINOR_ALL_LISTS',
+  PATH: 'PATH',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
-
-//выбран фильтр - MINOR_BIG_LIST - перерисовка основного списка
-//изменены контролы - MAJOR - перерисовка трёх списков и фильтров
-//добавлен/удален коммент - MINOR_ALL_LISTS - перерисовка трёх списков
 
 export const MenuItem = {
   STATS: 'stats',
-  ALL_MOVIES: 'allMovies',
+  ALL: 'all',
   WATCHLIST: 'watchlist',
   HISTORY: 'history',
   FAVORITES: 'favorites',
 };
+
+export const submitKeys = ['Control', 'Enter'];
 
 export const StatisticsPeriods = [
   {
@@ -77,4 +105,17 @@ export const StatisticsPeriods = [
 export const Color = {
   YELLOW: 'yellow',
   WHITE: 'white',
+};
+
+export const BAR_HEIGHT = 50;
+
+export const UserRankNames = {
+  LOW: 'Novice',
+  MIDDLE: 'Fan',
+  HIGH: 'Movie Buff',
+};
+
+export const UserRankLevels = {
+  LOW: 10,
+  HIGH: 20,
 };
