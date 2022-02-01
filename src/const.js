@@ -64,7 +64,7 @@ export const UserAction = {
 };
 
 export const UpdateType = {
-  PATH: 'PATH',
+  PATCH: 'PATCH',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
 };

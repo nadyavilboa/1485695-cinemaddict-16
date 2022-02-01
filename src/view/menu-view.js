@@ -18,11 +18,17 @@ export default class MenuView extends AbstractView {
   }
 
   #menuClickHandler = (evt) => {
-    if (evt.target.tagName !== 'A') {
+    if (evt.target.tagName !== 'A' && evt.target.tagName !== 'SPAN') {
       return;
     }
 
     evt.preventDefault();
+
+    if (evt.target.tagName === 'SPAN') {
+      this.#callbacks.forEach((cb) => cb(evt.target.parentNode.dataset.menuItem));
+      return;
+    }
+
     this.#callbacks.forEach((cb) => cb(evt.target.dataset.menuItem));
   }
 }

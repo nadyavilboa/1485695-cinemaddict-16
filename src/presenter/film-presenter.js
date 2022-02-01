@@ -136,7 +136,7 @@ export default class FilmPresenter {
         const filmId = this.#film.id;
         this.#changeData(
           UserAction.ADD_COMMENT,
-          UpdateType.PATH,
+          UpdateType.PATCH,
           { filmId, newComment },
           position,
         );
@@ -149,7 +149,7 @@ export default class FilmPresenter {
 
     this.#changeData(
       UserAction.CHANGE_CONTROLS,
-      UpdateType.PATH,
+      UpdateType.PATCH,
       {...this.#film, userDetails: {...newDetailsData }},
       position,
     );
@@ -159,7 +159,7 @@ export default class FilmPresenter {
     const position = this.#popupContainerComponent ? this.#popupContainerComponent.scrollTopOffset : 0;
     this.#changeData(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATH,
+      UpdateType.PATCH,
       { commentId, film: this.#film },
       position,
     );

@@ -211,7 +211,7 @@ export default class FilmsListPresenter {
 
   #handleModelEvent = (updateType, data, position) => {
     switch (updateType) {
-      case UpdateType.PATH:
+      case UpdateType.PATCH:
         this.#filmPresenter.get(data.id).init(data, position);
         break;
       case UpdateType.MAJOR:
