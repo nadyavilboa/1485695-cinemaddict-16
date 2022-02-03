@@ -5,7 +5,7 @@ import CommentsModel from './model/comments-model.js';
 import FilterModel from './model/filter-model.js';
 import HeaderLogoView from './view/header-logo-view.js';
 import MenuView from './view/menu-view.js';
-import StatisticsView from './view/stats-view.js';
+import StatisticsView from './view/statistics-view.js';
 import FooterLogoView from './view/footer-logo-view';
 import FooterStatisticsView from './view/footer-statistics-view.js';
 import { getActualRank } from './utils/film.js';

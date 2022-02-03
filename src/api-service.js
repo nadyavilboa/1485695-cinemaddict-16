@@ -40,14 +40,11 @@ export default class ApiService {
     return response.json();
   }
 
-  deleteComment = async (commentId) => {
-    const response = await this.#load({
-      url: `comments/${commentId}`,
-      method: Method.DELETE,
-    });
-
-    return response;
-  }
+  deleteComment = async (commentId) => await
+  this.#load({
+    url: `comments/${commentId}`,
+    method: Method.DELETE,
+  });
 
   #adaptToServer = (film) => {
     const adaptedFilm = {

@@ -3,7 +3,7 @@ import { TimeValues, Color } from '../const.js';
 import dayjs from 'dayjs';
 
 export const getWatchedFilms = (films) => {
-  const watchedFilms = films.filter((film) => isFilmWatched(film));
+  const watchedFilms = films.filter(isFilmWatched);
   return watchedFilms;
 };
 

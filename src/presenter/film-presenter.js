@@ -1,5 +1,5 @@
-import PopupContainerView from '../view/popup-container-view.js';
 import FilmView from '../view/film-view.js';
+import PopupView from '../view/popup-view.js';
 import { renderElement, removeComponent, replace } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
 import { isCtrlEnterEvent, isEscapeEvent } from '../utils/common.js';
@@ -7,6 +7,12 @@ import { isCtrlEnterEvent, isEscapeEvent } from '../utils/common.js';
 const PopupMode = {
   POPUP_CLOSE: 'CLOSE',
   POPUP_OPEN: 'OPEN',
+};
+
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
 };
 
 export default class FilmPresenter {
@@ -21,7 +27,7 @@ export default class FilmPresenter {
   #changeData = null;
   #changeMode = null;
 
-  #popupContainerComponent = null;
+  #popupComponent = null;
 
   constructor (filmsListContainer, changeData, changeMode, commentsModel) {
     this.#filmsListContainer = filmsListContainer;
@@ -36,7 +42,7 @@ export default class FilmPresenter {
     this.#film = film;
 
     const prevFilmComponent = this.#filmComponent;
-    const prevPopupComponent = this.#popupContainerComponent;
+    const prevPopupComponent = this.#popupComponent;
 
     this.#filmComponent = new FilmView(film);
     this.#filmComponent.setFilmCardClickHandler(() => {
@@ -52,15 +58,15 @@ export default class FilmPresenter {
     }
 
     if (prevPopupComponent !== null && document.body.contains(prevPopupComponent.element)) {
-      this.#popupContainerComponent = new PopupContainerView(
+      this.#popupComponent = new PopupView(
         film,
         this.#changeFilmCardControls,
         this.#commentsModel.comments,
         this.#deleteCommentFilmCard,
       );
-      replace(this.#popupContainerComponent, prevPopupComponent);
-      this.#popupContainerComponent.scrollPopup(scrollPosition);
-      this.#popupContainerComponent.setCloseClickHandler(this.#closePopup);
+      replace(this.#popupComponent, prevPopupComponent);
+      this.#popupComponent.scrollPopup(scrollPosition);
+      this.#popupComponent.setCloseClickHandler(this.#closePopup);
     }
 
     removeComponent(prevFilmComponent);
@@ -79,7 +85,7 @@ export default class FilmPresenter {
     this.#changeData = null;
     this.#changeMode = null;
 
-    this.#popupContainerComponent = null;
+    this.#popupComponent = null;
   }
 
   #renderPopup = (film, changePopupControls, deleteComment, scrollPosition) => {
@@ -92,11 +98,11 @@ export default class FilmPresenter {
       document.addEventListener('keydown', this.#onEscKeyDown);
       document.addEventListener('keydown', this.#onCtrlEnterDown);
 
-      this.#popupContainerComponent = new PopupContainerView(film, changePopupControls, this.#comments, deleteComment);
-      renderElement(document.body, this.#popupContainerComponent);
+      this.#popupComponent = new PopupView(film, changePopupControls, this.#comments, deleteComment);
+      renderElement(document.body, this.#popupComponent);
 
-      this.#popupContainerComponent.scrollPopup(scrollPosition);
-      this.#popupContainerComponent.setCloseClickHandler(this.#closePopup);
+      this.#popupComponent.scrollPopup(scrollPosition);
+      this.#popupComponent.setCloseClickHandler(this.#closePopup);
     });
 
   }
@@ -107,8 +113,41 @@ export default class FilmPresenter {
     }
   }
 
+  setViewState = (state) => {
+    if (this.#popupMode === PopupMode.POPUP_CLOSE) {
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#popupComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this.#popupComponent.updateData({
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this.#popupComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this.#popupComponent.shake(resetFormState);
+        break;
+    }
+  }
+
   #closePopup = () => {
-    removeComponent(this.#popupContainerComponent);
+    removeComponent(this.#popupComponent);
+    this.#popupComponent = null;
+
     document.body.classList.remove('hide-overflow');
     document.removeEventListener('keydown', this.#onEscKeyDown);
     document.removeEventListener('keydown', this.#onCtrlEnterDown);
@@ -124,9 +163,9 @@ export default class FilmPresenter {
     if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
 
-      if (this.#popupContainerComponent) {
-        const formData = this.#popupContainerComponent.getFormData();
-        const position = this.#popupContainerComponent.scrollTopOffset;
+      if (this.#popupComponent) {
+        const formData = this.#popupComponent.getFormData();
+        const position = this.#popupComponent.scrollTopOffset;
 
         const newComment = {
           comment: formData.get('comment-text'),
@@ -145,7 +184,7 @@ export default class FilmPresenter {
   }
 
   #changeFilmCardControls = (newDetailsData) => {
-    const position = this.#popupContainerComponent ? this.#popupContainerComponent.scrollTopOffset : 0;
+    const position = this.#popupComponent ? this.#popupComponent.scrollTopOffset : 0;
 
     this.#changeData(
       UserAction.CHANGE_CONTROLS,
@@ -156,7 +195,8 @@ export default class FilmPresenter {
   }
 
   #deleteCommentFilmCard = (commentId) => {
-    const position = this.#popupContainerComponent ? this.#popupContainerComponent.scrollTopOffset : 0;
+    const position = this.#popupComponent.scrollTopOffset;
+
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,

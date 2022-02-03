@@ -4,7 +4,7 @@ import FilmsContainerView from '../view/films-container-view.js';
 import FilmsListContainerView from '../view/films-list-container-view.js';
 import SortView from '../view/sort-view.js';
 import ButtonShowMoreView from '../view/button-show-more-view.js';
-import FilmPresenter from './film-presenter.js';
+import FilmPresenter, { State } from './film-presenter.js';
 import { sortByDate, sortByRating } from '../utils/common.js';
 import { filterFilms } from '../utils/film.js';
 import { renderElement, removeComponent } from '../utils/render.js';
@@ -193,16 +193,26 @@ export default class FilmsListPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update, position) => {
+  #handleViewAction = async (actionType, updateType, update, position) => {
     switch (actionType) {
       case UserAction.CHANGE_CONTROLS:
         this.#filmsModel.updateFilm(updateType, update, position);
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update, position);
+        this.#filmPresenter.get(update.film.id).setViewState(State.SAVING);
+        try {
+          await this.#commentsModel.addComment(updateType, update, position);
+        } catch (err) {
+          this.#filmPresenter.get(update.film.id).setViewState(State.ABORTING);
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update, position);
+        this.#filmPresenter.get(update.film.id).setViewState(State.DELETING);
+        try {
+          await this.#commentsModel.deleteComment(updateType, update, position);
+        } catch (err) {
+          this.#filmPresenter.get(update.film.id).setViewState(State.ABORTING);
+        }
         break;
       default:
         throw new Error(`Unknown userActionType type ${actionType}`);
