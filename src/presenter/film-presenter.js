@@ -113,7 +113,7 @@ export default class FilmPresenter {
     }
   }
 
-  setViewState = (state) => {
+  setViewState = (state, commentId) => {
     if (this.#popupMode === PopupMode.POPUP_CLOSE) {
       return;
     }
@@ -129,11 +129,12 @@ export default class FilmPresenter {
     switch (state) {
       case State.SAVING:
         this.#popupComponent.updateData({
-          isSaving: true,
+          isDisabled: true,
         });
         break;
       case State.DELETING:
         this.#popupComponent.updateData({
+          commentId,
           isDisabled: true,
           isDeleting: true,
         });

@@ -119,3 +119,5 @@ export const UserRankLevels = {
   LOW: 10,
   HIGH: 20,
 };
+
+export const SHAKE_TIME = 600;

@@ -1,6 +1,5 @@
 import SmartView from './smart-view.js';
 import { countHourInDuration, countMinutesInDuration } from '../utils/common.js';
-import { createElement } from '../utils/render.js';
 import { ControlType } from '../const.js';
 import { COMMENTS_EMOTION, BLANK_COMMENT } from '../const.js';
 import he from 'he';
@@ -80,9 +79,10 @@ const createPopupInfoContainerTemplate = (film) => (
   </div>`
 );
 
-const createPopupControlsTemplate = ({watchList, alreadyWatched, favorite}) => (
+const createPopupControlsTemplate = ({watchList, alreadyWatched, favorite}, isDisabled) => (
   `<section class="film-details__controls">
     <button
+      ${isDisabled ? 'disabled' : ''}
       type="button"
       class="film-details__control-button film-details__control-button--watchlist ${watchList ? 'film-details__control-button--active' : ''}"
       id="watchlist"
@@ -91,6 +91,7 @@ const createPopupControlsTemplate = ({watchList, alreadyWatched, favorite}) => (
       ${watchList ? 'Added to watchlist' : 'Add to watchlist'}
     </button>
     <button
+      ${isDisabled ? 'disabled' : ''}
       type="button"
       class="film-details__control-button film-details__control-button--watched ${alreadyWatched ? 'film-details__control-button--active' : ''}"
       id="watched"
@@ -99,6 +100,7 @@ const createPopupControlsTemplate = ({watchList, alreadyWatched, favorite}) => (
       ${alreadyWatched ? 'Already watched' : 'Not watched yet'}
     </button>
     <button
+      ${isDisabled ? 'disabled' : ''}
       type="button"
       class="film-details__control-button film-details__control-button--favorite ${favorite ? 'film-details__control-button--active' : ''}"
       id="favorite"
@@ -109,8 +111,9 @@ const createPopupControlsTemplate = ({watchList, alreadyWatched, favorite}) => (
   </section>`
 );
 
-const createPopupCommentTemplate = ({id, emotion, comment, author, date}, isDisabled, isDeleting) => (
-  `<li class="film-details__comment">
+const createPopupCommentTemplate = ({id, emotion, comment, author, date}, commentId, isDisabled, isDeleting) => {
+  const isDeletingComment = commentId === id;
+  return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img
         src="./images/emoji/${emotion}.png"
@@ -127,17 +130,19 @@ const createPopupCommentTemplate = ({id, emotion, comment, author, date}, isDisa
           ${dayjs(date).format('DD/MM/YYYY hh:mm')}
         </span>
         <button
+          ${isDeletingComment && isDisabled ? 'disabled' : ''}
+          type="button"
           class="film-details__comment-delete"
           data-comment-id="${id}"
-          ${isDisabled ? 'disabled' : ''}>
-          ${isDeleting ? 'Deleting...' : 'Delete'}
+        >
+            ${isDeletingComment && isDeleting ? 'Deleting...' : 'Delete'}
         </button>
       </p>
     </div>
-  </li>`
-);
+  </li>`;
+};
 
-const createPopupEmotionListTemplate = (emotionList, activeEmotion, isSaving) => (
+const createPopupEmotionListTemplate = (emotionList, activeEmotion, isDisabled) => (
   `<div class="film-details__emoji-list">
     ${emotionList.map((emotion) => (
     `<input
@@ -147,7 +152,7 @@ const createPopupEmotionListTemplate = (emotionList, activeEmotion, isSaving) =>
       id="emoji-${emotion}"
       value="${emotion}"
       ${emotion === activeEmotion ? 'checked' : ''}
-      ${isSaving ? 'disabled' : ''}
+      ${isDisabled ? 'disabled' : ''}
     >
     <label
       class="film-details__emoji-label"
@@ -163,8 +168,8 @@ const createPopupEmotionListTemplate = (emotionList, activeEmotion, isSaving) =>
   </div>`
 );
 
-const createPopupNewCommentTemplate = ({text, emotion}, isSaving) => {
-  const popupEmotionListTemplate = createPopupEmotionListTemplate(COMMENTS_EMOTION, emotion, isSaving);
+const createPopupNewCommentTemplate = ({text, emotion}, isDisabled) => {
+  const popupEmotionListTemplate = createPopupEmotionListTemplate(COMMENTS_EMOTION, emotion, isDisabled);
 
   return (
     `<div class="film-details__new-comment">
@@ -181,15 +186,15 @@ const createPopupNewCommentTemplate = ({text, emotion}, isSaving) => {
           name="comment-text"
           class="film-details__comment-input"
           placeholder="Select reaction below and write comment here" name="comment"
-          ${isSaving ? 'disabled' : ''}
+          ${isDisabled ? 'disabled' : ''}
         >${he.encode(text)}</textarea>
       </label>
       ${popupEmotionListTemplate}
     </div>`);
 };
 
-const createPopupCommentsContainerTemplate = (commentsId, comments, isDisabled, isDeleting) => {
-  const commentsList = comments.map((comment) => createPopupCommentTemplate(comment, isDisabled, isDeleting)).join(' ');
+const createPopupCommentsContainerTemplate = (commentsId, comments, commentId, isDisabled, isDeleting) => {
+  const commentsList = comments.map((comment) => createPopupCommentTemplate(comment, commentId, isDisabled, isDeleting)).join(' ');
   return `<section class="film-details__comments-wrap">
     <h3 class="film-details__comments-title">Comments
       <span class="film-details__comments-count">${commentsId.length}</span>
@@ -200,17 +205,17 @@ const createPopupCommentsContainerTemplate = (commentsId, comments, isDisabled, 
   </section>`;
 };
 
-const createPopupTemplate = (data, comments, newComment) => {
+const createPopupTemplate = (data, comments) => {
 
   const popupCloseButton = createPopupCloseButtonTemplate();
 
   const popupInfoContainer = createPopupInfoContainerTemplate(data);
 
-  const popupControls = createPopupControlsTemplate(data.userDetails);
+  const popupControls = createPopupControlsTemplate(data.userDetails, data.isDisabled);
 
-  const commentsContainer = createPopupCommentsContainerTemplate(data.comments, comments, data.isDisabled, data.isDeleting);
+  const commentsContainer = createPopupCommentsContainerTemplate(data.comments, comments, data.commentId, data.isDisabled, data.isDeleting);
 
-  const newCommentContainer = createPopupNewCommentTemplate(newComment, data.isSaving);
+  const newCommentContainer = createPopupNewCommentTemplate(data.comment, data.isSaving);
 
   return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
@@ -233,38 +238,21 @@ export default class PopupView extends SmartView {
   #updateFilmCard = null;
   #comments = null;
 
-  #newComment = null;
-
-  #formElement= null;
   #deleteComment = null;
 
-  constructor(film, updateFilmCard, comments, deleteComment, newComment = BLANK_COMMENT) {
+  constructor(film, updateFilmCard, comments, deleteComment) {
     super();
     this._data = PopupView.parseFilmToData(film);
 
     this.#updateFilmCard = updateFilmCard;
     this.#comments = comments;
-
     this.#deleteComment = deleteComment;
-
-    this.#newComment = newComment;
 
     this.#setInnerHandlers();
   }
 
-  get element() {
-
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    this.#formElement = this.#element.querySelector('.film-details__inner');
-
-    return this.#element;
-  }
-
   get template() {
-    return createPopupTemplate(this._data, this.#comments, this.#newComment);
+    return createPopupTemplate(this._data, this.#comments);
   }
 
   restoreHandlers = () => {
@@ -290,14 +278,17 @@ export default class PopupView extends SmartView {
   }
 
   get scrollTopOffset() {
-    return this.#element.scrollTop;
+    return this.element.scrollTop;
   }
 
   scrollPopup = (scrollPosition) => {
-    this.#element.scrollTo(0, scrollPosition);
+    this.element.scrollTo(0, scrollPosition);
   }
 
-  getFormData = () => new FormData(this.#formElement);
+  getFormData = () => {
+    const form = this.element.querySelector('form');
+    return new FormData(form);
+  }
 
   #controlClickHandler = (evt) => {
     evt.preventDefault();
@@ -322,32 +313,29 @@ export default class PopupView extends SmartView {
         throw new Error(`Unknown control type ${evt.target.id}`);
     }
 
-    this.updateData(newUserDetails);
     this.#updateFilmCard(newUserDetails);
   }
 
   #deleteHandler = (evt) => {
-    evt.preventDefault();
     this.#deleteComment(evt.target.dataset.commentId);
   }
 
   #textCommentInputHandler = (evt) => {
-    evt.preventDefault();
-    this._data = {...this._data, text: evt.target.value};
-    this.updateData(this._data, true);
+    this.updateData({
+      ...this._data,
+      comment: {...this._data.comment, text:evt.target.value}
+    }, true);
   }
 
   #inputEmotionClickHandler = (evt) => {
-    evt.preventDefault();
-    const newCommentData = {...this._data.newComment, emotion: evt.target.value};
-    this._data = {...this._data, newComment: newCommentData};
-    this.#newComment = this._data;
-
+    this.updateData({
+      ...this._data,
+      comment: {...this._data.comment, emotion: evt.target.value}});
   }
 
   setCloseClickHandler = (callback) => {
     this._callback.click = callback;
-    this.#element.querySelector('.film-details__close-btn')
+    this.element.querySelector('.film-details__close-btn')
       .addEventListener('click', this.#closeClickHandler);
   }
 
@@ -357,17 +345,10 @@ export default class PopupView extends SmartView {
   }
 
   static parseFilmToData = (film) => ({...film,
-    newComment: BLANK_COMMENT,
+    comment: BLANK_COMMENT,
+    commentId: null,
     isSaving: false,
     isDeleting: false,
     isDisabled: false,
   });
-
-  static parseDataToFilm = (data) => {
-    const film = {...data};
-
-    delete film.isDisabled;
-    delete film.isSaving;
-    delete film.isDeleting;
-  }
 }
